@@ -43,5 +43,15 @@ async def query(request: QueryRequest, http_request: Request) -> QueryResponse:
         from fastapi import HTTPException
         raise HTTPException(status_code=503, detail="Service not ready")
 
-    result = orchestrator.process_request(request.prompt)
+    if not request.prompt or not request.prompt.strip():
+        from fastapi import HTTPException
+        raise HTTPException(status_code=422, detail="prompt must not be empty")
+
+    try:
+        result = orchestrator.process_request(request.prompt)
+    except Exception as exc:
+        logger.error("Request processing failed: %s", exc)
+        from fastapi import HTTPException
+        raise HTTPException(status_code=500, detail=str(exc))
+
     return QueryResponse(**result)

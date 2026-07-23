@@ -31,8 +31,13 @@ class Database:
         return conn
 
     def _create_connection(self) -> sqlite3.Connection:
-        db_path = Path(self._settings.database_path)
-        conn = sqlite3.connect(str(db_path))
+        db_path = self._settings.database_path
+        if db_path == ":memory:":
+            conn = sqlite3.connect("file::memory:?cache=shared", uri=True, check_same_thread=False)
+        elif db_path.startswith("file:"):
+            conn = sqlite3.connect(db_path, uri=True, check_same_thread=False)
+        else:
+            conn = sqlite3.connect(str(Path(db_path)), check_same_thread=False)
         conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("PRAGMA foreign_keys=ON")
         conn.row_factory = sqlite3.Row
