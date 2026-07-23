@@ -6,10 +6,8 @@ from evomind.exceptions.errors import (
     ObservationError,
     EvidenceStoreError,
     ConfidenceError,
-    RegistryError,
     RetrievalError,
     InjectionError,
-    ConfigurationError,
     DatabaseError,
     TelemetryError,
 )
@@ -22,10 +20,8 @@ __all__ = [
     "ObservationError",
     "EvidenceStoreError",
     "ConfidenceError",
-    "RegistryError",
     "RetrievalError",
     "InjectionError",
-    "ConfigurationError",
     "DatabaseError",
     "TelemetryError",
 ]

@@ -1,0 +1,164 @@
+{
+  "title": "EvoMind Observability",
+  "description": "Complete observability dashboard for EvoMind behavioral learning system",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Confidence Over Time",
+      "description": "Rule confidence across all requests. Rising line indicates learning.",
+      "panel_type": "graph",
+      "query": {
+        "promql": "evomind_rule_confidence",
+        "legend_format": "confidence"
+      },
+      "options": {
+        "y_axis_min": 0,
+        "y_axis_max": 1,
+        "show_legend": true,
+        "type": "line"
+      }
+    },
+    {
+      "id": 2,
+      "title": "SQL Safety Ratio",
+      "description": "Proportion of safe SQL queries. Moving from 0 toward 1 shows improvement.",
+      "panel_type": "value",
+      "query": {
+        "promql": "evomind_sql_safety_ratio"
+      },
+      "options": {
+        "unit": "percent",
+        "color_thresholds": [
+          {"value": 0, "color": "red"},
+          {"value": 0.5, "color": "yellow"},
+          {"value": 0.9, "color": "green"}
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "title": "Requests Over Time",
+      "description": "Total requests processed by the system.",
+      "panel_type": "graph",
+      "query": {
+        "promql": "rate(evomind_requests_total[1m])"
+      },
+      "options": {
+        "type": "bar",
+        "show_legend": false
+      }
+    },
+    {
+      "id": 4,
+      "title": "Evidence Accumulation",
+      "description": "Total evidence collected for the behavioral rule.",
+      "panel_type": "graph",
+      "query": {
+        "promql": "evomind_rule_evidence_count"
+      },
+      "options": {
+        "type": "line",
+        "y_axis_min": 0
+      }
+    },
+    {
+      "id": 5,
+      "title": "Rule State",
+      "description": "Current state of the behavioral rule (candidate, active, suspended, archived).",
+      "panel_type": "value",
+      "query": {
+        "promql": "evomind_rule_status"
+      },
+      "options": {}
+    },
+    {
+      "id": 6,
+      "title": "Active Rules",
+      "description": "Number of currently active behavioral rules.",
+      "panel_type": "value",
+      "query": {
+        "promql": "count(evomind_rules_total{status=\"active\"})"
+      },
+      "options": {}
+    },
+    {
+      "id": 7,
+      "title": "Supporting vs Contradicting",
+      "description": "Evidence breakdown. Green bars show learning progress.",
+      "panel_type": "graph",
+      "query": {
+        "promql": "evomind_evidence_supporting_total",
+        "legend_format": "supporting"
+      },
+      "options": {
+        "type": "bar",
+        "stack_series": true
+      }
+    },
+    {
+      "id": 8,
+      "title": "State Transitions",
+      "description": "Log of all rule state changes with reasons.",
+      "panel_type": "table",
+      "query": {
+        "traces_tag_filter": {
+          "tags": [
+            {"key": "span_name", "operator": "=", "value": "evomind.rule.state_change"}
+          ]
+        }
+      },
+      "options": {
+        "columns": ["timestamp", "from_status", "to_status", "reason", "confidence"]
+      }
+    },
+    {
+      "id": 9,
+      "title": "Recent Classification Distribution",
+      "description": "Breakdown of safe vs unsafe vs ambiguous across all requests.",
+      "panel_type": "pie",
+      "query": {
+        "traces_tag_filter": {
+          "tags": [
+            {"key": "span_name", "operator": "=", "value": "evomind.sql.evaluation"}
+          ]
+        }
+      },
+      "options": {
+        "aggregation": "count",
+        "group_by": "classification"
+      }
+    },
+    {
+      "id": 10,
+      "title": "Recent Traces",
+      "description": "Click any trace to see full span tree and attributes.",
+      "panel_type": "table",
+      "query": {
+        "traces_tag_filter": {
+          "tags": [
+            {"key": "service.name", "operator": "=", "value": "evomind-observability"}
+          ]
+        }
+      },
+      "options": {
+        "columns": [
+          "timestamp",
+          "trace_id",
+          "classification",
+          "rule_retrieved",
+          "confidence",
+          "request_id"
+        ]
+      }
+    }
+  ],
+  "variables": [
+    {
+      "name": "rule_id",
+      "type": "query",
+      "query": "evomind_rules_total",
+      "include_all": true
+    }
+  ],
+  "tags": ["evomind", "observability", "behavioral-learning"]
+}

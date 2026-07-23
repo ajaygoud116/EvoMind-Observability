@@ -1,10 +1,32 @@
+# Database
+*.db
+*.db-wal
+*.db-shm
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
-*.db
-.env
-.pytest_cache/
 *.egg-info/
 dist/
 build/
-.venv/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Demo data
+temp_*.db

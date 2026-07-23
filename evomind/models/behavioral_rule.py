@@ -31,6 +31,7 @@ class BehavioralRule:
     )
     promoted_at: str | None = None
     demoted_at: str | None = None
+    archived_at: str | None = None
 
     @property
     def total_evidence(self) -> int:
@@ -58,6 +59,10 @@ class BehavioralRule:
             and self.confidence >= self.promotion_threshold
         )
 
+    @property
+    def should_archive(self, contradicting_count: int = 0) -> bool:
+        return False
+
     def to_dict(self) -> dict:
         return {
             "id": self.id,
@@ -78,6 +83,7 @@ class BehavioralRule:
             "updated_at": self.updated_at,
             "promoted_at": self.promoted_at,
             "demoted_at": self.demoted_at,
+            "archived_at": self.archived_at,
         }
 
     @classmethod
@@ -101,4 +107,5 @@ class BehavioralRule:
             updated_at=data["updated_at"],
             promoted_at=data.get("promoted_at"),
             demoted_at=data.get("demoted_at"),
+            archived_at=data.get("archived_at"),
         )

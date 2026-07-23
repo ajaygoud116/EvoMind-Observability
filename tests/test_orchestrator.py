@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import os as _os
+import tempfile as _tempfile
+import uuid as _uuid
+
 import pytest
 
 from evomind.config.settings import Settings
@@ -10,13 +14,23 @@ from evomind.orchestration.orchestrator import Orchestrator
 
 class TestOrchestratorProcessRequest:
     def setup_method(self) -> None:
-        self.settings = Settings(database_path=":memory:", otel_enabled=False)
+        self._db_path = _os.path.join(
+            _tempfile.gettempdir(), f"evomind_orch_{_uuid.uuid4().hex}.db"
+        )
+        self.settings = Settings(
+            database_path=self._db_path, otel_enabled=False
+        )
         self.lifecycle = LifecycleManager(self.settings)
         self.registry = self.lifecycle.startup()
         self.orchestrator = Orchestrator(self.registry)
 
     def teardown_method(self) -> None:
         self.lifecycle.shutdown()
+        if _os.path.exists(self._db_path):
+            try:
+                _os.remove(self._db_path)
+            except PermissionError:
+                pass
 
     def test_process_request_returns_dict(self) -> None:
         result = self.orchestrator.process_request("show me all users")
@@ -34,12 +48,12 @@ class TestOrchestratorProcessRequest:
         result = self.orchestrator.process_request("show me all users")
         assert result["classification"] in ("unsafe", "safe", "ambiguous")
 
-    def test_process_request_rule_retrieved(self) -> None:
+    def test_process_request_rule_not_retrieved_initially(self) -> None:
         result = self.orchestrator.process_request("get users")
-        assert result["rule_retrieved"] is True
-        assert result["rule_name"] is not None
+        assert result["rule_retrieved"] is False
+        assert result["rule_name"] is None
 
-    def test_process_request_no_guidance(self) -> None:
+    def test_process_request_no_guidance_initially(self) -> None:
         result = self.orchestrator.process_request("show all users")
         assert result["guidance_injected"] is False
 

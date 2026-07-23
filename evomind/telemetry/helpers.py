@@ -65,15 +65,6 @@ class SpanHelper:
         span.record_exception(exception)
 
 
-class MetricHelper:
-    """Utility methods for consistent metric creation."""
-
-    METRIC_REQUESTS_TOTAL = "evomind.requests.total"
-    METRIC_SQL_SAFETY_RATIO = "evomind.sql.safety.ratio"
-    METRIC_RULE_CONFIDENCE = "evomind.rule.confidence"
-    METRIC_RULE_EVIDENCE_COUNT = "evomind.rule.evidence.count"
-
-
 def add_exception_event(span: Span, exception: Exception, escaped: bool = True) -> None:
     """Record an exception as a span event with structured attributes."""
     span.record_exception(exception)

@@ -8,6 +8,7 @@ from evomind.orchestration.service_registry import ServiceRegistry
 from evomind.persistence.database import Database
 from evomind.telemetry.tracer import TracerManager
 from evomind.telemetry.meter import MeterManager
+from evomind.telemetry.metrics_registry import MetricsRegistry
 from evomind.telemetry.helpers import SpanHelper
 
 logger = logging.getLogger("evomind.lifecycle")
@@ -80,6 +81,9 @@ class LifecycleManager:
 
         self._registry.register("tracer_manager", self._tracer_manager)
         self._registry.register("meter_manager", self._meter_manager)
+
+        metrics_registry = MetricsRegistry(self._meter_manager.meter)
+        self._registry.register("metrics_registry", metrics_registry)
 
         logger.debug(
             "Telemetry initialized (endpoint=%s)",

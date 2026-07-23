@@ -67,14 +67,28 @@ class Schema:
         created_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS learning_states (
+        id TEXT PRIMARY KEY,
+        request_id TEXT NOT NULL REFERENCES request_contexts(id),
+        rule_id TEXT NOT NULL REFERENCES behavioral_rules(id),
+        confidence REAL NOT NULL,
+        status TEXT NOT NULL,
+        supporting_count INTEGER NOT NULL,
+        contradicting_count INTEGER NOT NULL,
+        total_evidence INTEGER NOT NULL,
+        snapshot_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_observations_rule_id ON observations(rule_id);
     CREATE INDEX IF NOT EXISTS idx_observations_request_id ON observations(request_id);
     CREATE INDEX IF NOT EXISTS idx_evidence_records_rule_id ON evidence_records(rule_id);
     CREATE INDEX IF NOT EXISTS idx_evidence_records_created_at ON evidence_records(created_at);
     CREATE INDEX IF NOT EXISTS idx_request_contexts_created_at ON request_contexts(created_at);
+    CREATE INDEX IF NOT EXISTS idx_learning_states_rule_id ON learning_states(rule_id);
     """
 
     DROP_ALL: str = """
+    DROP TABLE IF EXISTS learning_states;
     DROP TABLE IF EXISTS evidence_records;
     DROP TABLE IF EXISTS observations;
     DROP TABLE IF EXISTS request_contexts;

@@ -31,7 +31,7 @@ class ObservationFactory(ObservationFactoryInterface):
         rule_id: str,
     ) -> Observation:
         if evaluation is None:
-            raise ValueError("evaluation must not be None")
+            raise ObservationError("evaluation must not be None")
 
         evidence_type = self._derive_evidence_type(
             evaluation.classification,

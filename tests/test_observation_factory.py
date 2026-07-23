@@ -104,5 +104,6 @@ class TestObservationFactory:
 
     def test_none_evaluation_raises(self) -> None:
         context = RequestContext(prompt="test")
-        with pytest.raises(ValueError, match="must not be None"):
+        from evomind.exceptions.errors import ObservationError
+        with pytest.raises(ObservationError, match="must not be None"):
             self.factory.create(None, context, self.rule_id)

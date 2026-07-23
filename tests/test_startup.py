@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os as _os
+import tempfile as _tempfile
+import uuid as _uuid
 from unittest.mock import patch
 
 from evomind.config.settings import Settings
@@ -7,9 +10,16 @@ from evomind.orchestration.lifecycle import LifecycleManager
 from evomind.orchestration.service_registry import ServiceRegistry
 
 
+def _db() -> str:
+    return _os.path.join(
+        _tempfile.gettempdir(), f"evomind_startup_{_uuid.uuid4().hex}.db"
+    )
+
+
 class TestStartup:
     def test_startup_creates_registry(self) -> None:
-        settings = Settings(database_path=":memory:", otel_enabled=False)
+        p = _db()
+        settings = Settings(database_path=p, otel_enabled=False)
         lifecycle = LifecycleManager(settings)
         registry = lifecycle.startup()
 
@@ -24,9 +34,11 @@ class TestStartup:
         assert registry.is_registered("request_context_repository")
 
         lifecycle.shutdown()
+        _clean(p)
 
     def test_startup_seeds_rule(self) -> None:
-        settings = Settings(database_path=":memory:", otel_enabled=False)
+        p = _db()
+        settings = Settings(database_path=p, otel_enabled=False)
         lifecycle = LifecycleManager(settings)
         registry = lifecycle.startup()
 
@@ -42,9 +54,11 @@ class TestStartup:
         assert rule.status.value == "candidate"
 
         lifecycle.shutdown()
+        _clean(p)
 
     def test_startup_idempotent(self) -> None:
-        settings = Settings(database_path=":memory:", otel_enabled=False)
+        p = _db()
+        settings = Settings(database_path=p, otel_enabled=False)
         lifecycle = LifecycleManager(settings)
         registry1 = lifecycle.startup()
         rule_id1 = registry1.resolve("seeded_rule_id")
@@ -56,17 +70,21 @@ class TestStartup:
 
         assert rule_id2 is not None
         lifecycle2.shutdown()
+        _clean(p)
 
     def test_shutdown_clean(self) -> None:
-        settings = Settings(database_path=":memory:", otel_enabled=False)
+        p = _db()
+        settings = Settings(database_path=p, otel_enabled=False)
         lifecycle = LifecycleManager(settings)
         lifecycle.startup()
         lifecycle.shutdown()
+        _clean(p)
 
     def test_telemetry_enabled_startup(self, in_memory_exporter) -> None:
         import opentelemetry.trace as trace_module
 
-        settings = Settings(database_path=":memory:", otel_enabled=True)
+        p = _db()
+        settings = Settings(database_path=p, otel_enabled=True)
         lifecycle = LifecycleManager(settings)
 
         from evomind.telemetry.tracer import TracerManager
@@ -90,9 +108,11 @@ class TestStartup:
         assert "evomind.rule.created" in span_names
 
         lifecycle.shutdown()
+        _clean(p)
 
     def test_registry_contains_all_services(self) -> None:
-        settings = Settings(database_path=":memory:", otel_enabled=False)
+        p = _db()
+        settings = Settings(database_path=p, otel_enabled=False)
         lifecycle = LifecycleManager(settings)
         registry = lifecycle.startup()
 
@@ -101,6 +121,7 @@ class TestStartup:
             "meter_manager",
             "database",
             "seeded_rule_id",
+            "metrics_registry",
             "rule_repository",
             "observation_repository",
             "evidence_repository",
@@ -109,3 +130,12 @@ class TestStartup:
 
         assert set(registry.keys()) == expected_keys
         lifecycle.shutdown()
+        _clean(p)
+
+
+def _clean(p: str) -> None:
+    if _os.path.exists(p):
+        try:
+            _os.remove(p)
+        except PermissionError:
+            pass

@@ -9,7 +9,7 @@ from opentelemetry.trace import StatusCode
 from evomind.config.settings import Settings
 from evomind.telemetry.tracer import TracerManager
 from evomind.telemetry.meter import MeterManager
-from evomind.telemetry.helpers import SpanHelper, MetricHelper, add_exception_event
+from evomind.telemetry.helpers import SpanHelper, add_exception_event
 from evomind.telemetry.exception import ExceptionInstrumentor
 
 

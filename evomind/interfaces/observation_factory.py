@@ -36,6 +36,5 @@ class ObservationFactory(ABC):
             A new Observation with derived evidence type.
 
         Raises:
-            ObservationError: If observation creation fails.
-            ValueError: If evaluation is None.
+            ObservationError: If observation creation fails or evaluation is None.
         """

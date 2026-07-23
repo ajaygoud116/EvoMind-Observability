@@ -26,20 +26,12 @@ class ConfidenceError(EvoMindError):
     """Confidence Engine computation failure."""
 
 
-class RegistryError(EvoMindError):
-    """Rule Registry persistence or query failure."""
-
-
 class RetrievalError(EvoMindError):
     """Rule Retriever query failure."""
 
 
 class InjectionError(EvoMindError):
     """Guidance Injector failure."""
-
-
-class ConfigurationError(EvoMindError):
-    """Invalid or missing configuration."""
 
 
 class DatabaseError(EvoMindError):

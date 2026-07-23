@@ -1,16 +1,34 @@
 from __future__ import annotations
 
+import os as _os
+import tempfile as _tempfile
+import uuid as _uuid
+
 from fastapi.testclient import TestClient
 
 from evomind.app import create_app
 from evomind.config.settings import Settings
 
 
+def _db() -> str:
+    return _os.path.join(
+        _tempfile.gettempdir(), f"evomind_api_{_uuid.uuid4().hex}.db"
+    )
+
+
 class TestApiHealth:
     def setup_method(self) -> None:
-        settings = Settings(database_path=":memory:", otel_enabled=False)
+        self._db_path = _db()
+        settings = Settings(database_path=self._db_path, otel_enabled=False)
         app = create_app(settings)
         self.client = TestClient(app)
+
+    def teardown_method(self) -> None:
+        if _os.path.exists(self._db_path):
+            try:
+                _os.remove(self._db_path)
+            except PermissionError:
+                pass
 
     def test_health_returns_ok(self) -> None:
         response = self.client.get("/api/health")
@@ -39,10 +57,11 @@ class TestApiHealth:
         data = response.json()
         assert len(data["sql"]) > 0
 
-    def test_query_rule_retrieved_true(self) -> None:
+    def test_query_rule_not_retrieved_initially(self) -> None:
         response = self.client.post("/api/query", json={"prompt": "find users"})
         data = response.json()
-        assert data["rule_retrieved"] is True
+        assert data["rule_retrieved"] is False
+        assert data["rule_name"] is None
 
     def test_query_guidance_not_injected(self) -> None:
         response = self.client.post("/api/query", json={"prompt": "get orders"})

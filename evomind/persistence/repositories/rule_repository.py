@@ -3,7 +3,6 @@ from __future__ import annotations
 from evomind.models.behavioral_rule import BehavioralRule
 from evomind.models.enums import RuleStatus
 from evomind.persistence.database import Database
-from evomind.exceptions.errors import RegistryError
 
 
 class RuleRepository:
