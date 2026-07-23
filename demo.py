@@ -1,10 +1,10 @@
 """
-EvoMind Observability — Demo Script
+EvoMind Observability -- Demo Script
 =====================================
 Demonstrates behavioral learning for AI agents:
-  • Unsafe queries accumulate evidence and trigger a status promotion.
-  • Once promoted (active), the rule engine retrieves rules and injects guidance.
-  • Safe queries rebuild confidence over time.
+  * Unsafe queries accumulate evidence and trigger a status promotion.
+  * Once promoted (active), the rule engine retrieves rules and injects guidance.
+  * Safe queries rebuild confidence over time.
 
 Usage:
     python demo.py               # interactive mode (press Enter between steps)
@@ -126,7 +126,7 @@ class EvoMindClient:
             try:
                 data = self.health()
                 print(
-                    f"  {ok('✓')} API reachable  "
+                    f"  {ok('V')} API reachable  "
                     f"version={info(data.get('version', '?'))}  "
                     f"service={info(data['service'])}"
                 )
@@ -135,14 +135,14 @@ class EvoMindClient:
                 last_err = exc
                 if attempt < MAX_RETRIES:
                     print(
-                        f"  {fail('✗')} Connection refused  "
+                        f"  {fail('X')} Connection refused  "
                         f"(attempt {attempt}/{MAX_RETRIES})  "
-                        f"retrying in {RETRY_DELAY}s…"
+                        f"retrying in {RETRY_DELAY}s..."
                     )
                     time.sleep(RETRY_DELAY)
                 else:
                     print(
-                        f"  {fail('✗')} Connection refused  "
+                        f"  {fail('X')} Connection refused  "
                         f"(attempt {attempt}/{MAX_RETRIES})"
                     )
         print(
@@ -172,17 +172,17 @@ def print_result(idx: int, r: QueryResult) -> None:
     print(f"  [{heading(f'#{idx}')}]  Classification: {label}")
     print(f"        Confidence:    {r.confidence:>7.4f}  "
           f"(delta {r.confidence_delta:>+7.4f})")
-    print(f"        Rule:          {info('✓') if r.rule_retrieved else '–'}  "
-          f"{r.rule_name or '–'}")
-    print(f"        Guidance:      {info('✓') if r.guidance_injected else '–'}")
+    print(f"        Rule:          {info('V') if r.rule_retrieved else '-'}  "
+          f"{r.rule_name or '-'}")
+    print(f"        Guidance:      {info('V') if r.guidance_injected else '-'}")
     print(f"        Request ID:    {r.request_id}")
     print(f"        SQL:           {r.sql}")
     if r.status_changed:
-        print(f"        {warn('★ STATUS CHANGE')} → {warn(r.to_status or '?')}")
+        print(f"        {warn('* STATUS CHANGE')} → {warn(r.to_status or '?')}")
     print()
 
 
-def print_divider(char: str = "─", width: int = 72) -> None:
+def print_divider(char: str = "-", width: int = 72) -> None:
     print(char * width)
 
 
@@ -207,14 +207,14 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
 
     # ---- Step 1 ----
     print()
-    print_divider("━")
-    print(heading("  STEP 1 — Initial Requests  "))
-    print(info("  Sending unsafe SQL requests to accumulate evidence…"))
+    print_divider("=")
+    print(heading("  STEP 1 -- Initial Requests  "))
+    print(info("  Sending unsafe SQL requests to accumulate evidence..."))
     print_divider()
     print()
 
     if not auto:
-        input(f"  {c('Press Enter to continue…', M)}")
+        input(f"  {c('Press Enter to continue...', M)}")
 
     for i, prompt in enumerate(UNSAFE_PROMPTS, 1):
         r = client.query(prompt)
@@ -222,59 +222,59 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
         print_result(i, r)
 
     # ---- Step 2 ----
-    print_divider("━")
-    print(heading("  STEP 2 — Verify Promotion  "))
-    print(info("  Checking that the agent was promoted to 'active' status…"))
+    print_divider("=")
+    print(heading("  STEP 2 -- Verify Promotion  "))
+    print(info("  Checking that the agent was promoted to 'active' status..."))
     print_divider()
     print()
 
     if not auto:
-        input(f"  {c('Press Enter to continue…', M)}")
+        input(f"  {c('Press Enter to continue...', M)}")
 
     last = results[-1]
     if last.status_changed and last.to_status == "active":
-        print(f"  {ok('✓')} Status changed  →  {warn('active')}\n")
+        print(f"  {ok('V')} Status changed  →  {warn('active')}\n")
     else:
         status_info = ""
         if not last.status_changed:
             status_info += " status_changed=False"
         if last.to_status != "active":
             status_info += f" to_status={last.to_status}"
-        print(f"  {fail('✗')} Unexpected:{status_info}\n")
+        print(f"  {fail('X')} Unexpected:{status_info}\n")
 
     # ---- Step 3 ----
-    print_divider("━")
-    print(heading("  STEP 3 — Rule Enforcement  "))
-    print(info("  Repeating unsafe request — rule should be retrieved and "
-               "guidance injected…"))
+    print_divider("=")
+    print(heading("  STEP 3 -- Rule Enforcement  "))
+    print(info("  Repeating unsafe request -- rule should be retrieved and "
+               "guidance injected..."))
     print_divider()
     print()
 
     if not auto:
-        input(f"  {c('Press Enter to continue…', M)}")
+        input(f"  {c('Press Enter to continue...', M)}")
 
     r = client.query("Delete user with id 1")
     results.append(r)
     print_result(len(results), r)
 
     if r.rule_retrieved and r.guidance_injected:
-        print(f"  {ok('✓')} Rule enforced  —  "
+        print(f"  {ok('V')} Rule enforced  --  "
               f"rule={info(r.rule_name or '?')}  "
               f"guidance={ok('injected')}\n")
     else:
-        print(f"  {fail('✗')} Rule not enforced  —  "
+        print(f"  {fail('X')} Rule not enforced  --  "
               f"rule_retrieved={r.rule_retrieved}  "
               f"guidance_injected={r.guidance_injected}\n")
 
     # ---- Step 4 ----
-    print_divider("━")
-    print(heading("  STEP 4 — Grow Confidence  "))
-    print(info("  Sending safe requests to rebuild confidence…"))
+    print_divider("=")
+    print(heading("  STEP 4 -- Grow Confidence  "))
+    print(info("  Sending safe requests to rebuild confidence..."))
     print_divider()
     print()
 
     if not auto:
-        input(f"  {c('Press Enter to continue…', M)}")
+        input(f"  {c('Press Enter to continue...', M)}")
 
     for i, prompt in enumerate(SAFE_PROMPTS, len(results) + 1):
         r = client.query(prompt)
@@ -282,7 +282,7 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
         print_result(i, r)
 
     # ---- Summary ----
-    print_divider("━")
+    print_divider("=")
     print(heading("  SUMMARY  "))
     print_divider()
     print()
@@ -291,20 +291,20 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
         f"  {'#':<4} {'Classification':<14} {'Confidence':<10} "
         f"{'Rule':<6} {'Guidance':<9} {'Status':<12} SQL"
     )
-    sep = "  " + "─" * (len(header) - 2)
+    sep = "  " + "-" * (len(header) - 2)
     print(header)
     print(sep)
 
     for idx, r in enumerate(results, 1):
         label = STATUS_LABELS.get(r.classification, r.classification.upper())
-        rule_mark = ok("✓") if r.rule_retrieved else "–"
-        guidance_mark = ok("✓") if r.guidance_injected else "–"
+        rule_mark = ok("V") if r.rule_retrieved else "-"
+        guidance_mark = ok("V") if r.guidance_injected else "-"
         status = ""
         if r.status_changed:
             status = warn(f"→{r.to_status or '?'}")
         else:
-            status = "—"
-        sql_short = r.sql if len(r.sql) <= 36 else r.sql[:33] + "…"
+            status = "--"
+        sql_short = r.sql if len(r.sql) <= 36 else r.sql[:33] + "..."
         print(
             f"  {idx:<4} {label:<14} {r.confidence:<10.4f} "
             f"{rule_mark:<6} {guidance_mark:<9} {status:<12} {sql_short}"
@@ -328,7 +328,7 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="EvoMind Observability — Behavioural Learning Demo",
+        description="EvoMind Observability -- Behavioural Learning Demo",
     )
     parser.add_argument(
         "--host",
@@ -351,8 +351,8 @@ def main() -> None:
     client = EvoMindClient(host=args.host, port=args.port)
 
     print()
-    print_divider("━")
-    print(heading("  EvoMind Observability — Demo  "))
+    print_divider("=")
+    print(heading("  EvoMind Observability -- Demo  "))
     print(info(f"  Target: {args.host}:{args.port}  "
                f"Mode: {'auto' if args.auto else 'interactive'}"))
     print_divider()
