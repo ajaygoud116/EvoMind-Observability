@@ -43,7 +43,7 @@ Every step emits **OpenTelemetry spans and metrics** — visible in SigNoz.
 
 ---
 
-## Architecture (30 Seconds)
+## Architecture
 
 ```
 User Prompt
@@ -240,20 +240,4 @@ evomind-observability/
 
 ---
 
-## Judge Quick-Start
 
-See [JUDGE_GUIDE.md](./JUDGE_GUIDE.md) for a 2-minute evaluation checklist.
-
----
-
-## Documentation
-
-| Document | Purpose |
-|----------|---------|
-| [DEMO.md](./DEMO.md) | Step-by-step demo script |
-| [OBSERVABILITY_GUIDE.md](./OBSERVABILITY_GUIDE.md) | How to investigate with SigNoz |
-| [TRACE_WALKTHROUGH.md](./TRACE_WALKTHROUGH.md) | Detailed trace anatomy |
-| [JUDGE_GUIDE.md](./JUDGE_GUIDE.md) | Hackathon judging checklist |
-| [HACKATHON_SUBMISSION_AUDIT.md](./HACKATHON_SUBMISSION_AUDIT.md) | Final pre-submission verification |
-
----
