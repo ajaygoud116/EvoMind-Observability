@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from opentelemetry import metrics
 from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import MetricExporter, PeriodicExportingMetricReader
 from opentelemetry.sdk.resources import Resource
 
 from evomind.config.settings import Settings
@@ -10,8 +11,9 @@ from evomind.config.settings import Settings
 class MeterManager:
     """Manages the OpenTelemetry MeterProvider lifecycle."""
 
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, exporter: MetricExporter | None = None) -> None:
         self._settings = settings
+        self._exporter = exporter
         self._provider: MeterProvider | None = None
 
     def initialize(self) -> None:
@@ -22,6 +24,9 @@ class MeterManager:
             }
         )
         self._provider = MeterProvider(resource=resource)
+        if self._exporter is not None:
+            reader = PeriodicExportingMetricReader(self._exporter)
+            self._provider.add_metric_reader(reader)
         metrics.set_meter_provider(self._provider)
 
     @property

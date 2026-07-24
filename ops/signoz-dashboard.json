@@ -62,40 +62,6 @@
       }
     },
     {
-      "id": 5,
-      "title": "Rule State",
-      "description": "Current state of the behavioral rule (candidate, active, suspended, archived).",
-      "panel_type": "value",
-      "query": {
-        "promql": "evomind_rule_status"
-      },
-      "options": {}
-    },
-    {
-      "id": 6,
-      "title": "Active Rules",
-      "description": "Number of currently active behavioral rules.",
-      "panel_type": "value",
-      "query": {
-        "promql": "count(evomind_rules_total{status=\"active\"})"
-      },
-      "options": {}
-    },
-    {
-      "id": 7,
-      "title": "Supporting vs Contradicting",
-      "description": "Evidence breakdown. Green bars show learning progress.",
-      "panel_type": "graph",
-      "query": {
-        "promql": "evomind_evidence_supporting_total",
-        "legend_format": "supporting"
-      },
-      "options": {
-        "type": "bar",
-        "stack_series": true
-      }
-    },
-    {
       "id": 8,
       "title": "State Transitions",
       "description": "Log of all rule state changes with reasons.",
@@ -152,13 +118,6 @@
       }
     }
   ],
-  "variables": [
-    {
-      "name": "rule_id",
-      "type": "query",
-      "query": "evomind_rules_total",
-      "include_all": true
-    }
-  ],
+  "variables": [],
   "tags": ["evomind", "observability", "behavioral-learning"]
 }

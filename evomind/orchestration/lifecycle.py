@@ -59,6 +59,7 @@ class LifecycleManager:
         logger.info("Shutdown complete")
 
     def _init_telemetry(self) -> None:
+        from opentelemetry.sdk.metrics.export import MetricExporter as _MetricExporter
         from opentelemetry.sdk.trace.export import SpanExporter as _SpanExporter
         from evomind.telemetry.exporter import ExporterConfig
 
@@ -67,16 +68,19 @@ class LifecycleManager:
         if self._meter_manager is None:
             self._meter_manager = MeterManager(self._settings)
 
-        exporter: _SpanExporter | None = None
+        trace_exporter: _SpanExporter | None = None
+        metric_exporter: _MetricExporter | None = None
         if self._settings.is_telemetry_enabled:
-            exporter = ExporterConfig.create_span_exporter(self._settings)
+            trace_exporter = ExporterConfig.create_span_exporter(self._settings)
+            metric_exporter = ExporterConfig.create_metric_exporter(self._settings)
 
         self._tracer_manager.initialize()
-        if exporter is not None:
+        if trace_exporter is not None:
             from opentelemetry.sdk.trace.export import BatchSpanProcessor
             self._tracer_manager.provider.add_span_processor(
-                BatchSpanProcessor(exporter)
+                BatchSpanProcessor(trace_exporter)
             )
+        self._meter_manager = MeterManager(self._settings, exporter=metric_exporter)
         self._meter_manager.initialize()
 
         self._registry.register("tracer_manager", self._tracer_manager)
