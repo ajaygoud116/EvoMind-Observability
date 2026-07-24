@@ -53,7 +53,7 @@ Look at the demo output:
 
 ## 3. Is the learning observable? (1 minute)
 
-Open SigNoz at `http://localhost:3301`.
+Open SigNoz at `http://localhost:8080`.
 
 ### Verify traces exist
 
@@ -151,7 +151,7 @@ python demo.py --auto          # identical output
 
 | URL | Purpose |
 |-----|---------|
-| `http://localhost:3301` | SigNoz dashboard |
+| `http://localhost:8080` | SigNoz dashboard |
 | `http://localhost:8000` | EvoMind API |
 | `http://localhost:8000/docs` | Swagger UI |
 | `http://localhost:8000/api/health` | Health check |

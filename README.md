@@ -6,6 +6,10 @@ EvoMind Observability is a hackathon project that demonstrates how to make an AI
 
 A judge can answer every question about why an AI agent changed its behavior — without reading source code.
 
+## AI Assistant Disclosure
+
+This project was developed with assistance from AI coding tools (including Claude/opencode and GitHub Copilot) for code generation, debugging, documentation, and audit/review. All AI-generated code and documentation were reviewed, tested, and validated by the project author before inclusion.
+
 ---
 
 ## The Problem
@@ -85,43 +89,46 @@ Every arrow emits an OpenTelemetry span. Metrics are emitted at request, evidenc
 
 ---
 
-## Quick Start (One Command)
+## Quick Start
 
 ### Prerequisites
 - Docker & Docker Compose
 - Python 3.10+
+- [Foundry CLI](https://github.com/SigNoz/foundry) — install via:
+  ```bash
+  # Linux/macOS
+  curl -fsSL https://signoz.io/foundry.sh | bash
+  # Windows: download binary from GitHub releases, add to PATH
+  ```
 
-### Start Everything
+### Step 1: Deploy SigNoz via Foundry
 
 ```bash
-# Clone and enter the repository
-git clone <repo>
-cd evomind-observability
+foundryctl cast -f casting.yaml
+```
 
-# Start SigNoz + EvoMind
+Open `http://localhost:8080` and create your admin account.
+Wait 30-60s for initialization. OTLP collector ready at `localhost:4317`.
+
+### Step 2: Start EvoMind
+
+```bash
+# Option A — Docker (app only, connects to Foundry SigNoz)
 docker compose up -d
 
-# Wait 30 seconds for SigNoz to initialize
-# Open SigNoz: http://localhost:3301
-# EvoMind API: http://localhost:8000
-
-# Run the demo
-python demo.py
-```
-
-### Or Run EvoMind Standalone
-
-```bash
-# Install dependencies
+# Option B — Standalone (pip install, no Docker needed)
 pip install .
-
-# Start with telemetry off (no SigNoz needed)
-EVOMIND_OTEL_ENABLED=false python -m evomind
-
-# Or point to your SigNoz instance
-# Requires SigNoz at http://localhost:4317
 python -m evomind
 ```
+
+### Step 3: Run the Demo
+
+```bash
+python demo.py          # interactive
+python demo.py --auto   # run straight through
+```
+
+EvoMind API: `http://localhost:8000`
 
 ---
 
@@ -145,7 +152,7 @@ python demo.py --auto   # run straight through
 
 ## SigNoz Dashboard
 
-Open `http://localhost:3301` and navigate to the EvoMind dashboard:
+Open `http://localhost:8080` and navigate to the EvoMind dashboard:
 
 | Panel | What It Shows |
 |-------|--------------|
@@ -192,10 +199,12 @@ evomind-observability/
 │   └── telemetry/              # OpenTelemetry tracer, meter,
 │                               # MetricsRegistry, exporters
 ├── tests/                      # 214 tests, 92.73% coverage
-├── ops/                        # OTEL collector config
+├── casting.yaml                # Foundry deployment config
+├── casting.yaml.lock           # Foundry deployment lock (generated)
+├── ops/                        # Supplemental configs
 ├── screenshots/                # Demo screenshots
 ├── docs/                       # Architecture documentation
-├── docker-compose.yml          # SigNoz + EvoMind
+├── docker-compose.yml          # EvoMind app container
 ├── Dockerfile                  # EvoMind container
 ├── demo.py                     # Automated demo script
 ├── pyproject.toml

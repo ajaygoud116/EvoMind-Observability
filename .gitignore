@@ -28,5 +28,8 @@ htmlcov/
 Thumbs.db
 .DS_Store
 
+# Foundry generated output
+pours/
+
 # Demo data
 temp_*.db

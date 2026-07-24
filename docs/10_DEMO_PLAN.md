@@ -10,14 +10,14 @@ Demonstrate that a judge can investigate an AI agent's behavioral change using *
 
 | Item | Details |
 |---|---|
-| SigNoz | Self-hosted via Docker on localhost:3301 |
+| SigNoz | Self-hosted via Docker on localhost:8080 |
 | EvoMind service | Running on localhost:8000 |
 | Client | `curl`, a bash script, or the SigNoz dashboard |
 | Pre-seeded rule | `use_parameterized_sql` with default params |
 | Agent | Mock mode (deterministic) |
 
 **Pre-flight check:**
-1. SigNoz dashboard loads at `http://localhost:3301`
+1. SigNoz dashboard loads at `http://localhost:8080`
 2. EvoMind health endpoint: `GET /api/health` returns `{"status": "ok"}`
 3. Request `curl -X POST http://localhost:8000/api/query -H "Content-Type: application/json" -d '{"prompt": "test"}'` returns 200 with SQL
 

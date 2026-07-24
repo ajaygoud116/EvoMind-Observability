@@ -1437,51 +1437,34 @@ TOTAL                                       1314   106    92%
 
 ## 5. Infrastructure and Deployment
 
-### 5.1 Docker Compose Architecture
+### 5.1 Foundry Deployment (SigNoz)
+
+SigNoz is deployed via **Foundry** (`casting.yaml` at repo root). Foundry manages all SigNoz infrastructure — ClickHouse, ClickHouse Keeper, PostgreSQL, OTel Collector, SigNoz backend, SigNoz frontend (port 8080), and MCP server (port 8000).
+
+```bash
+foundryctl cast -f casting.yaml
+```
+
+After deployment, create an admin account at `http://localhost:8080`. The OTel collector is available at `localhost:4317` (gRPC) and `localhost:4318` (HTTP).
+
+See [casting.yaml](../casting.yaml) and [Foundry docs](https://github.com/SigNoz/foundry) for details.
+
+### 5.2 Docker Compose (EvoMind App Only)
+
+The EvoMind application runs in its own container, connecting to Foundry's OTel collector:
 
 ```
-Network: evomind_default (bridge)
-
 Services:
 ┌─────────────────────────────────────────────────────┐
-│  clickhouse (clickhouse:24.3-alpine)               │
-│  Ports: 9000 (native), 8123 (HTTP)                 │
-│  Volumes: clickhouse-storage, clickhouse-logs        │
-│  Health: clickhouse-client --query "SELECT 1"      │
-└──────────────┬──────────────────────────────────────┘
-               │
-┌──────────────▼──────────────────────────────────────┐
-│  query-service (signoz/query-service:0.76.2)        │
-│  Depends: clickhouse (healthy)                      │
-│  Ports: 8080 (HTTP)                                 │
-│  Env: ClickHouse DSNs, STORAGE env                  │
-└──────────────┬──────────────────────────────────────┘
-               │
-┌──────────────▼──────────────────────────────────────┐
-│  frontend (signoz/frontend:0.76.0-a13d1c89)         │
-│  Depends: query-service (healthy)                   │
-│  Ports: 3301 (HTTP)                                 │
-│  Env: SIGNOZ_FRONTEND_QUERY_SERVICE_HOST            │
-└──────────────┬──────────────────────────────────────┘
-               │
-┌──────────────▼──────────────────────────────────────┐
-│  signoz-otel-collector (signoz/signoz-otel-contrib: │
-│    v0.144.6)                                        │
-│  Depends: query-service                             │
-│  Ports: 4317 (gRPC), 4318 (HTTP)                    │
-│  Volumes: ./ops/otel-collector-config.yaml:/etc/... │
-│  Command: --config /etc/otel-collector-config.yaml  │
-└──────────────┬──────────────────────────────────────┘
-               │ OTLP gRPC (port 4317)
-┌──────────────▼──────────────────────────────────────┐
 │  evomind (./Dockerfile)                             │
-│  Depends: signoz-otel-collector (conditional)       │
 │  Ports: 8000 (HTTP)                                 │
-│  Env: EVOMIND_OTEL_ENDPOINT=http://... :4317       │
+│  Env: EVOMIND_OTEL_ENDPOINT=http://host.docker.     │
+│        internal:4317                                │
+│  Volumes: evomind-data                              │
 └─────────────────────────────────────────────────────┘
 ```
 
-### 5.2 OTel Collector Configuration
+### 5.3 OTel Collector Configuration
 
 ```yaml
 receivers:
@@ -1514,7 +1497,7 @@ service:
 
 Both traces and metrics go through the same batch processor and ClickHouse exporter. The batch processor collects spans for 1 second or 100 spans, whichever comes first.
 
-### 5.3 SigNoz Dashboard
+### 5.4 SigNoz Dashboard
 
 File: `ops/signoz-dashboard.json`
 
@@ -1725,7 +1708,7 @@ Expected output: 6 requests showing the learning lifecycle, ending with "Demo co
 # Start SigNoz stack
 docker compose up -d clickhouse query-service frontend signoz-otel-collector
 
-# Wait for SigNoz to be ready (verify on http://localhost:3301)
+# Wait for SigNoz to be ready (verify on http://localhost:8080)
 # Start EvoMind with OTEL enabled
 python demo.py --auto --host localhost --port 8000
 ```

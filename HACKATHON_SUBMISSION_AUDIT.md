@@ -235,7 +235,7 @@ python demo.py --auto
 | Failure Point | Risk | Mitigation |
 |---------------|------|------------|
 | SigNoz not initialized | Medium | Start SigNoz 30s before demo; health check in docker compose |
-| Port conflicts (3301, 8000, 4317) | Low | All ports configurable via .env |
+| Port conflicts (8000, 4317) | Low | All ports configurable via .env |
 | Docker not installed | Medium | Fallback: `EVOMIND_OTEL_ENABLED=false python -m evomind` (standalone) |
 | ClickHouse OOM on laptop | Low | Default Docker resources are sufficient |
 | Demo script shows connection error | Low | Script retries 5 times with backoff |

@@ -140,7 +140,7 @@ Same as above, except:
 │  │ FastAPI :8000    │──▶│ OTel Collector :4317    │ │
 │  │ SQLite :memory   │   │ ClickHouse              │ │
 │  │ OTel SDK         │   │ Query Service           │ │
-│  └──────────────────┘   │ Frontend :3301          │ │
+│  └──────────────────┘   │ Frontend :8080          │ │
 │                         └─────────────────────────┘ │
 └─────────────────────────────────────────────────────┘
 ```

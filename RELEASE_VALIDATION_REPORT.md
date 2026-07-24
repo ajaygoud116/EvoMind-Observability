@@ -43,7 +43,7 @@
 | Note | Severity |
 |------|----------|
 | No README badges (coverage, CI status) | Low — hackathon demo, not a production CI pipeline |
-| SigNoz port hardcoded (3301) | Low — acceptable for demo, documented in `.env` |
+| SigNoz port managed by Foundry (8080) | Low — documented in README |
 | FastAPI `on_event` deprecation warning | Low — functional, only cosmetic warnings |
 
 ---

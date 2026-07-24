@@ -29,7 +29,7 @@ python demo.py --auto
 
 ### Step 1: Initial State (30 seconds)
 
-**Action:** Open SigNoz at `http://localhost:3301`.
+**Action:** Open SigNoz at `http://localhost:8080`.
 
 **What to show:**
 - Empty Traces view (no requests yet)
@@ -179,7 +179,7 @@ curl -X POST http://localhost:8000/api/query \
 
 ## Demo Success Checklist
 
-- [ ] SigNoz is running at http://localhost:3301
+- [ ] SigNoz is running at http://localhost:8080
 - [ ] EvoMind is running at http://localhost:8000
 - [ ] `python demo.py` produces clear colored output
 - [ ] Step 1: Empty state visible in SigNoz

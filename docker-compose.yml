@@ -2,80 +2,15 @@ version: "3.9"
 
 services:
   # ============================================================
-  # SigNoz — OpenTelemetry-native observability backend
-  # ============================================================
-  clickhouse:
-    image: clickhouse/clickhouse-server:24.3-alpine
-    container_name: evomind-clickhouse
-    volumes:
-      - clickhouse-storage:/var/lib/clickhouse
-    environment:
-      CLICKHOUSE_DB: signoz
-      CLICKHOUSE_USER: signoz
-      CLICKHOUSE_PASSWORD: signoz
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - evomind-net
-
-  query-service:
-    image: signoz/query-service:0.76.2
-    container_name: evomind-query-service
-    command:
-      - --config=/root/config/prometheus.yml
-    volumes:
-      - query-service-storage:/data
-    environment:
-      - ClickHouseUrl=tcp://clickhouse:9000
-      - STORAGE:clickhouse:enabled=true
-      - DEPLOYMENT_TYPE=docker-standalone
-    depends_on:
-      clickhouse:
-        condition: service_healthy
-    ports:
-      - "6060:6060"
-    networks:
-      - evomind-net
-
-  frontend:
-    image: signoz/frontend:0.76.0-a13d1c89
-    container_name: evomind-frontend
-    environment:
-      - SIGNOZ_API_ENDPOINT=http://query-service:6060
-    depends_on:
-      - query-service
-    ports:
-      - "3301:3301"
-    networks:
-      - evomind-net
-
-  otel-collector:
-    image: signoz/signoz-otel-collector:v0.144.6
-    container_name: evomind-otel-collector
-    command:
-      - --config=/etc/otel-collector-config.yaml
-    volumes:
-      - ./ops/otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    depends_on:
-      clickhouse:
-        condition: service_healthy
-    ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
-    networks:
-      - evomind-net
-
-  # ============================================================
   # EvoMind Observability — the actual application
+  # Requires Foundry-deployed SigNoz for telemetry backend.
+  # See README.md for full deployment instructions.
   # ============================================================
   evomind:
     build: .
     container_name: evomind
     environment:
-      EVOMIND_OTEL_EXPORTER_ENDPOINT: http://otel-collector:4317
+      EVOMIND_OTEL_EXPORTER_ENDPOINT: http://host.docker.internal:4317
       EVOMIND_OTEL_ENABLED: "true"
       EVOMIND_DATABASE_PATH: /data/evomind.db
       EVOMIND_DEBUG: "true"
@@ -83,16 +18,11 @@ services:
       - "8000:8000"
     volumes:
       - evomind-data:/data
-    depends_on:
-      - otel-collector
-    networks:
-      - evomind-net
 
 volumes:
-  clickhouse-storage:
-  query-service-storage:
   evomind-data:
 
 networks:
-  evomind-net:
+  default:
+    name: evomind-net
     driver: bridge

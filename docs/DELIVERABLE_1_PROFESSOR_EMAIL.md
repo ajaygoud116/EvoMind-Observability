@@ -114,7 +114,7 @@ All spans carry version metadata: `app.version`, `schema.version`, `rule.version
 
 Four metric instruments: Counter for request totals, ObservableGauge for SQL safety ratio (safe/total), ObservableGauge for current rule confidence, ObservableGauge for evidence count.
 
-The telemetry pipeline: Python OpenTelemetry SDK → OTLP gRPC (port 4317) → SigNoz OTel Collector → ClickHouse storage → SigNoz frontend (port 3301). The collector configuration uses batching (1s timeout, 100 batch size). Metrics and traces share the same pipeline.
+The telemetry pipeline: Python OpenTelemetry SDK → OTLP gRPC (port 4317) → SigNoz OTel Collector → ClickHouse storage → SigNoz frontend (port 8080). The collector configuration uses batching (1s timeout, 100 batch size). Metrics and traces share the same pipeline.
 
 The masked SQL feature (`mask_sql=true`) truncates raw SQL to `sql_truncation_length` characters (default 200) and emits a SHA-256 hash in the `sql.hash` attribute for cross-trace correlation without exposing content.
 

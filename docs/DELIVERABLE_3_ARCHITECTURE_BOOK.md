@@ -1055,13 +1055,23 @@ clickhouse ← query-service ← frontend
 
 ### 10.2 Service Specifications
 
-| Service | Image | Ports | Depends On |
+SigNoz is deployed via **Foundry** (`casting.yaml`). Foundry manages these services:
+
+| Service | Managed By | Ports | Notes |
 |---|---|---|---|
-| clickhouse | clickhouse:24.3-alpine | 9000, 8123 | — |
-| query-service | signoz/query-service:0.76.2 | 8080 | clickhouse (healthy) |
-| frontend | signoz/frontend:0.76.0-a13d1c89 | 3301 | query-service (healthy) |
-| signoz-otel-collector | signoz/signoz-otel-contrib:v0.144.6 | 4317, 4318 | query-service |
-| evomind | (build: ./Dockerfile) | 8000 | signoz-otel-collector |
+| SigNoz Frontend | Foundry | 8080 | Web UI at `http://localhost:8080` |
+| SigNoz Query Service | Foundry | — | Internal API |
+| SigNoz OTel Collector | Foundry | 4317, 4318 | OTLP gRPC + HTTP |
+| ClickHouse | Foundry | 9000 | Telemetry storage |
+| ClickHouse Keeper | Foundry | — | Distributed coordination |
+| PostgreSQL | Foundry | — | SigNoz metadata |
+| SigNoz MCP Server | Foundry | 8000 (internal) | AI agent query API |
+
+EvoMind is the only custom service:
+
+| Service | Image | Ports | Description |
+|---|---|---|---|
+| evomind | (build: ./Dockerfile) | 8000:8000 | Behavioral learning API |
 
 ### 10.3 OTel Collector Pipeline
 

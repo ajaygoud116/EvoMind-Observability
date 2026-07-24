@@ -6,7 +6,7 @@ How to use SigNoz to investigate every behavioral change in the AI agent.
 
 ## Prerequisites
 
-- SigNoz running at `http://localhost:3301`
+- SigNoz running at `http://localhost:8080`
 - EvoMind running with `EVOMIND_OTEL_ENABLED=true` (default)
 - At least one request processed (run `python demo.py --auto`)
 
