@@ -171,7 +171,7 @@ evomind-observability/
 │   ├── DELIVERABLE_2_TECHNICAL_HANDOVER.md
 │   └── DELIVERABLE_3_ARCHITECTURE_BOOK.md
 ├── demo.py                              # 366-line automated CLI demo
-├── docker-compose.yml                   # 5 services, pinned versions
+├── docker-compose.yml                   # App only (SigNoz managed by Foundry)
 ├── Dockerfile                           # Multi-stage Python 3.10-slim
 ├── pyproject.toml                       # Dependencies and project metadata
 ├── LICENSE                              # MIT
@@ -1704,12 +1704,22 @@ Expected output: 6 requests showing the learning lifecycle, ending with "Demo co
 
 ### 8.2 Start with SigNoz Observability
 
-```bash
-# Start SigNoz stack
-docker compose up -d clickhouse query-service frontend signoz-otel-collector
+SigNoz is deployed via Foundry. This is a one-time prerequisite.
 
-# Wait for SigNoz to be ready (verify on http://localhost:8080)
-# Start EvoMind with OTEL enabled
+```bash
+# 1. Install Foundry
+curl -fsSL https://signoz.io/foundry.sh | bash
+
+# 2. Deploy SigNoz
+foundryctl cast -f casting.yaml
+
+# 3. Open http://localhost:8080 and create admin account (first visit)
+#    Wait 30-60s for initialization. OTLP ready at localhost:4317.
+
+# 4. Start EvoMind app
+docker compose up -d
+
+# 5. Run demo with OTEL enabled (auto-discovers http://localhost:4317)
 python demo.py --auto --host localhost --port 8000
 ```
 

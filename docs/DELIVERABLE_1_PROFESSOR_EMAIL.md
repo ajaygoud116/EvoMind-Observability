@@ -149,7 +149,7 @@ The test conftest provides a shared SQLite in-memory database fixture with full 
 
 ## Infrastructure
 
-**Docker Compose** (`docker-compose.yml`): Five services — ClickHouse (24.3-alpine), SigNoz query-service (0.76.2), SigNoz frontend (0.76.0-a13d1c89), SigNoz OTel collector (v0.144.6), and EvoMind (Python 3.10-slim image). All images pinned to explicit versions. Networks, volumes, and health checks configured.
+**Docker Compose** (`docker-compose.yml`): EvoMind app only (Python 3.10-slim image). SigNoz services (ClickHouse, query-service, frontend, OTel collector) are deployed via Foundry (`casting.yaml`). All images pinned to explicit versions. Networks, volumes, and health checks configured.
 
 **Dockerfile**: Multi-stage Python 3.10-slim build. Installs pyproject.toml dependencies, copies evomind package, exposes port 8000.
 

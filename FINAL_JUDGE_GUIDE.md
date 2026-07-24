@@ -64,7 +64,7 @@ Look at the demo output. The system accumulates evidence and promotes a rule bas
 
 ## 3. Is the Learning Observable? (1 minute)
 
-Open SigNoz at `http://localhost:8080`.
+Open SigNoz at `http://localhost:8080`. *(See `screenshots/` directory for reference images of expected state.)*
 
 ### Verify traces exist
 

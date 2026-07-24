@@ -7,16 +7,37 @@
 
 ## Setup
 
-```bash
-# Terminal 1: Start EvoMind + SigNoz
-docker compose up -d
-# Wait ~30 seconds for SigNoz to initialize
+SigNoz must be deployed before running the demo. This is a one-time prerequisite.
 
-# Terminal 2: Run the demo
+### 0a. Install Foundry
+
+```bash
+# macOS / Linux
+curl -fsSL https://signoz.io/foundry.sh | bash
+# Windows: download binary from GitHub releases, add to PATH
+```
+
+### 0b. Deploy SigNoz (one-time)
+
+```bash
+foundryctl cast -f casting.yaml
+```
+
+Open `http://localhost:8080` and create your admin account. Wait 30-60s for initialization. OTLP collector ready at `localhost:4317`.
+
+### 0c. Start EvoMind
+
+```bash
+docker compose up -d
+```
+
+### 0d. Run the Demo
+
+```bash
 python demo.py --auto
 ```
 
-Or run standalone (no SigNoz needed for the demo script):
+Or run standalone (no SigNoz needed for the demo script, no observability):
 
 ```bash
 EVOMIND_OTEL_ENABLED=false python -m evomind &
@@ -34,6 +55,7 @@ python demo.py --auto
 **What to show:**
 - Empty Traces view (no requests yet)
 - Metrics dashboard with no data points
+- *(See `screenshots/` directory for reference images of expected dashboard state.)*
 - Explain: "The system is fresh. The behavioral rule exists as a Candidate with confidence 0.50, but no evidence has been collected."
 
 **Key point:** Before any learning, there is nothing to observe.

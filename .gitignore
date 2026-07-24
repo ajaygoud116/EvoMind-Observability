@@ -33,3 +33,23 @@ pours/
 
 # Demo data
 temp_*.db
+
+# Audit / review / internal reports (not part of project)
+ADVERSARIAL_REJECTION.md
+FINAL_RELEASE_READINESS.md
+RELEASE_BLOCKERS_RESOLVED.md
+FINAL_CLAIMS_AUDIT.md
+FINAL_JUDGE_REPORT.md
+FINAL_QA.md
+DOCUMENTATION_CONSISTENCY_REPORT.md
+RELEASE_VALIDATION_REPORT.md
+HACKATHON_RELEASE_ELIGIBILITY.md
+HACKATHON_SUBMISSION_AUDIT.md
+POST_CORRECTION_VALIDATION.md
+FOUNDRY_MIGRATION_REPORT.md
+NEW_OPENING.md
+_audit_ground_truth.py
+
+# Downloaded binaries
+foundry_windows_amd64/
+foundry.tar.gz

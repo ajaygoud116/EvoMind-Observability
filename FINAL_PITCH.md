@@ -117,7 +117,8 @@ Before a rule is active, safe SQL doesn't prove the rule is unnecessary — it j
 ### Setup (1 minute)
 
 ```
-Terminal 1: docker compose up -d                      # Start SigNoz + EvoMind
+Terminal 1: foundryctl cast -f casting.yaml            # Deploy SigNoz via Foundry (one-time)
+Terminal 1: docker compose up -d                       # Start EvoMind app
 Terminal 2: curl http://localhost:8000/api/health      # Verify API is up
 ```
 

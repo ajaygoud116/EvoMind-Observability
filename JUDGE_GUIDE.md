@@ -6,6 +6,27 @@ This guide helps hackathon judges evaluate EvoMind Observability by answering th
 
 ---
 
+## 0. Prerequisites: Deploy SigNoz (one-time, ~1 minute)
+
+SigNoz must be deployed via Foundry before traces and metrics are visible.
+
+```bash
+# 1. Install Foundry
+curl -fsSL https://signoz.io/foundry.sh | bash
+# Windows: download binary from GitHub releases, add to PATH
+
+# 2. Deploy SigNoz
+foundryctl cast -f casting.yaml
+
+# 3. Open http://localhost:8080 and create your admin account
+# Wait 30-60s for initialization. OTLP collector ready at localhost:4317.
+
+# 4. Start EvoMind
+docker compose up -d
+```
+
+---
+
 ## 1. Does the system work? (30 seconds)
 
 ### Run the health check
@@ -53,7 +74,7 @@ Look at the demo output:
 
 ## 3. Is the learning observable? (1 minute)
 
-Open SigNoz at `http://localhost:8080`.
+Open SigNoz at `http://localhost:8080`. *(See `screenshots/` directory for reference images of expected state.)*
 
 ### Verify traces exist
 
