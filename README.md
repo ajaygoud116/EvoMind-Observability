@@ -170,11 +170,12 @@ Open `http://localhost:8080` and navigate to the EvoMind dashboard:
 | Panel | What It Shows |
 |-------|--------------|
 | Confidence Over Time | Line chart: 0.50 → 0.80 → 0.83+ |
-| SQL Safety Ratio | Pie chart: safe vs unsafe vs ambiguous |
-| Evidence Timeline | Bar chart: supporting vs contradicting |
+| SQL Safety Ratio | Value gauge: proportion of safe SQL |
+| Requests Over Time | Bar chart: request rate |
+| Evidence Accumulation | Line chart: total evidence collected |
+| State Transitions | Table: every rule state change with reason |
+| Recent Classification Distribution | Pie chart: safe vs unsafe vs ambiguous |
 | Recent Traces | Table: every request with key attributes |
-| State Transitions | Table: every rule status change |
-| Active Rules | Current ACTIVE rules count |
 
 ---
 
