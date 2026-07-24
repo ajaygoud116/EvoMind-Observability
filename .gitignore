@@ -29,6 +29,7 @@ Thumbs.db
 .DS_Store
 
 # Foundry generated output
+casting.yaml.lock
 pours/
 
 # Demo data

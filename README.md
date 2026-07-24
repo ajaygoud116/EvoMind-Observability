@@ -46,35 +46,57 @@ Every step emits **OpenTelemetry spans and metrics** — visible in SigNoz.
 ## Architecture
 
 ```
-User Prompt
-    │
-    ▼
-┌──────────────┐     ┌──────────────────┐
-│ RuleRetriever│────▶│ GuidanceInjector │
-└──────────────┘     └──────────────────┘
-                           │
-                           ▼
-┌──────────────┐     ┌──────────────────┐
-│  SQL Agent   │────▶│ SafetyEvaluator  │
-└──────────────┘     └──────────────────┘
-                           │
-                           ▼
-┌──────────────┐     ┌──────────────────┐
-│ObservFactory │────▶│  EvidenceStore   │
-└──────────────┘     └──────────────────┘
-                           │
-                           ▼
-┌──────────────┐     ┌──────────────────┐
-│ConfEngine    │────▶│  LearningState   │
-└──────────────┘     └──────────────────┘
-                           │
-                           ▼
+                    Foundry
+                    casting.yaml
+                         │
+                    foundryctl cast
+                         │
+                         ▼
+          ┌──────────────────────────┐
+          │  SigNoz + MCP Server     │
+          │  (ClickHouse, Postgres,  │
+          │   OTel Collector, etc.)  │
+          └────────────┬─────────────┘
+                       │ localhost:4317
+                       ▼
+┌──────────────────────────────────────────────┐
+│              EvoMind (Python)                 │
+│                                              │
+│  User Prompt                                 │
+│       │                                      │
+│       ▼                                      │
+│  ┌──────────────┐     ┌──────────────────┐   │
+│  │ RuleRetriever│────▶│ GuidanceInjector │   │
+│  └──────────────┘     └──────────────────┘   │
+│         │                                    │
+│         ▼                                    │
+│  ┌──────────────┐     ┌──────────────────┐   │
+│  │  SQL Agent   │────▶│ SafetyEvaluator  │   │
+│  └──────────────┘     └──────────────────┘   │
+│         │                                    │
+│         ▼                                    │
+│  ┌──────────────┐     ┌──────────────────┐   │
+│  │ObservFactory │────▶│  EvidenceStore   │   │
+│  └──────────────┘     └──────────────────┘   │
+│         │                                    │
+│         ▼                                    │
+│  ┌──────────────┐     ┌──────────────────┐   │
+│  │ConfEngine    │────▶│  LearningState   │   │
+│  └──────────────┘     └──────────────────┘   │
+│         │                                    │
+│         ▼                                    │
+│  OpenTelemetry SDK → OTLP gRPC ───────────────┘
+│                                              │
+└──────────────────────────────────────────────┘
+                         │
+                         ▼
                    ┌──────────────┐
-                   │   SigNoz     │  ← Traces + Metrics
+                   │  SigNoz UI   │
+                   │ localhost:8080│
                    └──────────────┘
 ```
 
-Every arrow emits an OpenTelemetry span. Metrics are emitted at request, evidence, and confidence update points.
+Every pipeline step emits an OpenTelemetry span. Spans are exported via OTLP gRPC to the Foundry-deployed SigNoz collector.
 
 ---
 
@@ -92,14 +114,8 @@ Every arrow emits an OpenTelemetry span. Metrics are emitted at request, evidenc
 ## Quick Start
 
 ### Prerequisites
-- Docker & Docker Compose
 - Python 3.10+
-- [Foundry CLI](https://github.com/SigNoz/foundry) — install via:
-  ```bash
-  # Linux/macOS
-  curl -fsSL https://signoz.io/foundry.sh | bash
-  # Windows: download binary from GitHub releases, add to PATH
-  ```
+- [Foundry CLI](https://github.com/SigNoz/foundry)
 
 ### Step 1: Deploy SigNoz via Foundry
 
@@ -113,19 +129,16 @@ Wait 30-60s for initialization. OTLP collector ready at `localhost:4317`.
 ### Step 2: Start EvoMind
 
 ```bash
-# Option A — Docker (app only, connects to Foundry SigNoz)
-docker compose up -d
-
-# Option B — Standalone (pip install, no Docker needed)
-pip install .
+pip install ".[demo]"
 python -m evomind
 ```
 
 ### Step 3: Run the Demo
 
+In another terminal:
+
 ```bash
-python demo.py          # interactive
-python demo.py --auto   # run straight through
+python demo.py --auto
 ```
 
 EvoMind API: `http://localhost:8000`
@@ -199,8 +212,6 @@ evomind-observability/
 ├── tests/                      # 214 tests, 92.73% coverage
 ├── ops/                        # OTel collector config, dashboard JSON
 ├── casting.yaml                # Foundry deployment config
-├── docker-compose.yml          # EvoMind app container
-├── Dockerfile                  # Multi-stage Python build
 ├── demo.py                     # Automated demo script
 ├── pyproject.toml
 └── README.md
