@@ -12,12 +12,6 @@ This project was developed with assistance from AI coding tools (including Claud
 
 ---
 
-## AI Assistant Disclosure
-
-This project was developed with assistance from AI coding tools (including Claude/opencode and GitHub Copilot) for code generation, debugging, documentation, and audit/review. All AI-generated code and documentation were reviewed, tested, and validated by the project author before inclusion.
-
----
-
 ## The Problem
 
 AI agents generate SQL. Sometimes safely (parameterized queries). Sometimes unsafely (string interpolation — SQL injection risk).
@@ -138,7 +132,7 @@ EvoMind API: `http://localhost:8000`
 
 ---
 
-## Demo (5 Minutes)
+## Demo
 
 Run `python demo.py` for an automated walkthrough:
 
@@ -181,8 +175,6 @@ EvoMind's key insight: **every decision point in the learning loop is a trace sp
 - **Which SQL triggered the observation?** → Check `sql.generation` span attributes
 - **Which trace recorded it?** → Every trace has `trace_id` linked to `request_id`
 
-See [OBSERVABILITY_GUIDE.md](./OBSERVABILITY_GUIDE.md) for detailed instructions.
-
 ---
 
 ## Repository Structure
@@ -205,13 +197,10 @@ evomind-observability/
 │   └── telemetry/              # OpenTelemetry tracer, meter,
 │                               # MetricsRegistry, exporters
 ├── tests/                      # 214 tests, 92.73% coverage
+├── ops/                        # OTel collector config, dashboard JSON
 ├── casting.yaml                # Foundry deployment config
-├── casting.yaml.lock           # Foundry deployment lock (generated)
-├── ops/                        # Supplemental configs
-├── screenshots/                # Demo screenshots
-├── docs/                       # Architecture documentation
 ├── docker-compose.yml          # EvoMind app container
-├── Dockerfile                  # EvoMind container
+├── Dockerfile                  # Multi-stage Python build
 ├── demo.py                     # Automated demo script
 ├── pyproject.toml
 └── README.md
