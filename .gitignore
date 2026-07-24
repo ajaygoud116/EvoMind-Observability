@@ -34,7 +34,17 @@ pours/
 # Demo data
 temp_*.db
 
-# Audit / review / internal reports (not part of project)
+# Presentation / guide / pitch documents (not core code)
+DEMO.md
+JUDGE_GUIDE.md
+FINAL_JUDGE_GUIDE.md
+FINAL_PITCH.md
+FINAL_POSITIONING.md
+OBSERVABILITY_GUIDE.md
+TRACE_WALKTHROUGH.md
+docs/
+
+# Audit / review / internal reports
 ADVERSARIAL_REJECTION.md
 FINAL_RELEASE_READINESS.md
 RELEASE_BLOCKERS_RESOLVED.md
