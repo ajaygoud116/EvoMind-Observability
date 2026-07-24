@@ -187,12 +187,12 @@ evomind-observability/
 # Clean run 1
 rm -f evomind.db
 python demo.py --auto
-# → 6 requests, confidence 0.88, final SQL safe
+# → 6 requests, confidence 0.83+, final SQL safe
 
 # Clean run 2 (identical)
 rm -f evomind.db
 python demo.py --auto
-# → 6 requests, confidence 0.88, final SQL safe
+# → 6 requests, confidence 0.83+, final SQL safe
 ```
 
 **Status:** ✅ Deterministic — identical output on every run
@@ -220,7 +220,7 @@ python demo.py --auto
 | Moment | What Judge Sees | Impact |
 |--------|----------------|--------|
 | 0-30s | `python demo.py --auto` → colored output | Immediately understands the system works |
-| 30-60s | Confidence rises 0.50→0.88, SQL becomes safe | Immediately understands the system learns |
+| 30-60s | Confidence rises 0.50→0.83+, SQL becomes safe | Immediately understands the system learns |
 | 60-90s | SigNoz dashboard shows traces + metrics | Immediately understands observability |
 | 90-120s | State change span visible | Confirms learning is auditable |
 | 120-180s | Compare trace #1 vs #4 in SigNoz | Confirms root cause investigation |

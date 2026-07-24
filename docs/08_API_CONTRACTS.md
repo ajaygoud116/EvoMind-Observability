@@ -75,7 +75,7 @@ class Response:
 7. Call ObservationFactory.create()
 8. Call EvidenceStore.append()
 9. Call ConfidenceEngine.update()
-10. Call RuleRegistry.check_transition()
+10. Call rule_repository.check_transition()
 11. Emit lifecycle.complete span
 12. End root span
 13. Return Response
@@ -274,7 +274,7 @@ class ConfidenceUpdate:
 ```
 
 **Algorithm:**
-1. Load rule from RuleRegistry
+1. Load rule from rule_repository
 2. Load latest evidence type from EvidenceStore
 3. Update alpha/beta per evidence type
 4. Compute new confidence = alpha / (alpha + beta)
@@ -291,25 +291,25 @@ class ConfidenceUpdate:
 
 ---
 
-## 8. Behavioral Rule Registry
+## 8. Behavioral Rule Repository
 
-### `RuleRegistry.get_rule(rule_id: str) -> BehavioralRule`
+### `rule_repository.get_rule(rule_id: str) -> BehavioralRule`
 
 Returns the full BehavioralRule entity.
 
-### `RuleRegistry.get_active_rules() -> list[BehavioralRule]`
+### `rule_repository.get_active_rules() -> list[BehavioralRule]`
 
 Returns all rules with `status == "active"`.
 
-### `RuleRegistry.create_rule(name: str, guidance_text: str, **kwargs) -> BehavioralRule`
+### `rule_repository.create_rule(name: str, guidance_text: str, **kwargs) -> BehavioralRule`
 
 Creates a new rule with default parameters. Only used for seeding the single rule.
 
-### `RuleRegistry.update_confidence(rule_id: str, alpha: float, beta: float, confidence: float) -> BehavioralRule`
+### `rule_repository.update_confidence(rule_id: str, alpha: float, beta: float, confidence: float) -> BehavioralRule`
 
 Updates the Bayesian parameters after ConfidenceEngine computation.
 
-### `RuleRegistry.check_transition(rule_id: str) -> TransitionResult`
+### `rule_repository.check_transition(rule_id: str) -> TransitionResult`
 
 Checks and executes state transitions.
 

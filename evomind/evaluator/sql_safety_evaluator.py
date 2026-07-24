@@ -71,7 +71,7 @@ class SqlSafetyEvaluator(OutcomeEvaluator):
             is_destructive = any(p in detected_patterns for p in
                                  ("dangerous_ddl", "dangerous_dml", "sql_injection",
                                   "stacked_queries", "tautology", "union_injection",
-                                  "time_based_attack"))
+                                  "time_based_attack", "inline_values"))
             if is_destructive:
                 classification = Classification.UNSAFE
             else:

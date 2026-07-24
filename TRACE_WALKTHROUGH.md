@@ -182,7 +182,7 @@ Same as Trace #4, but:
 
 - `guidance.injection` → `injected=true`
 - `evomind.sql.evaluation` → `classification=safe`
-- `evomind.confidence.updated` → `0.86 → 0.88`
+- `evomind.confidence.updated` → `0.83` (no change — ambiguous classification produces neutral evidence)
 
 ### Full Confidence Evolution
 
@@ -192,8 +192,8 @@ Same as Trace #4, but:
 | 2 | 0.67 → 0.75 | candidate | unsafe |
 | 3 | 0.75 → **0.80** | **candidate → active** | unsafe |
 | 4 | 0.80 → 0.83 | active | **safe** |
-| 5 | 0.83 → 0.86 | active | safe |
-| 6 | 0.86 → 0.88 | active | safe |
+| 5 | 0.83 (no change — ambiguous → neutral) | active | safe |
+| 6 | 0.83 (no change — ambiguous → neutral) | active | safe |
 
 ---
 

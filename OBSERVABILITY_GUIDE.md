@@ -24,7 +24,7 @@ Navigate to **Dashboard → EvoMind Overview**.
 - Flat line at 0.50 → initial state, no evidence
 - Rising line → evidence accumulating (supporting)
 - Sharp inflection → state change occurred
-- Plateau near 0.86+ → system converged
+- Plateau at current confidence → evidence accumulation rate has decreased
 
 **Why it matters:** One glance tells the judge whether the system learned.
 

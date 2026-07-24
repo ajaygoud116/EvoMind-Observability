@@ -251,28 +251,6 @@ class Orchestrator:
         # --- Steps 8-10: Learning pipeline ---
         conf_before = rule.confidence if rule else 0.5
 
-        ev_span = SpanHelper.create_span(
-            tracer,
-            SpanHelper.SPAN_NAME_EVIDENCE_APPENDED,
-            parent=request_span,
-            attributes={
-                "rule.id": learning_rule_id,
-                "observation.id": observation.id,
-                "evidence_type": observation.evidence_type.value,
-            },
-        )
-
-        evidence = evidence_store.append(observation, conf_before, conf_before)
-        SpanHelper.set_attributes(ev_span, {
-            "evidence.id": evidence.id,
-            "evidence.delta": evidence.delta,
-        })
-        SpanHelper.end_span(ev_span)
-
-        metrics_registry.record_evidence_count(
-            learning_rule_id, rule.total_evidence if rule else 0
-        )
-
         cu_span = SpanHelper.create_span(
             tracer,
             SpanHelper.SPAN_NAME_CONFIDENCE_UPDATED,
@@ -296,6 +274,30 @@ class Orchestrator:
 
         metrics_registry.record_confidence(
             learning_rule_id, result["confidence_after"]
+        )
+
+        ev_span = SpanHelper.create_span(
+            tracer,
+            SpanHelper.SPAN_NAME_EVIDENCE_APPENDED,
+            parent=request_span,
+            attributes={
+                "rule.id": learning_rule_id,
+                "observation.id": observation.id,
+                "evidence_type": observation.evidence_type.value,
+            },
+        )
+
+        evidence = evidence_store.append(
+            observation, conf_before, result["confidence_after"]
+        )
+        SpanHelper.set_attributes(ev_span, {
+            "evidence.id": evidence.id,
+            "evidence.delta": evidence.delta,
+        })
+        SpanHelper.end_span(ev_span)
+
+        metrics_registry.record_evidence_count(
+            learning_rule_id, rule.total_evidence if rule else 0
         )
 
         if result["status_changed"]:

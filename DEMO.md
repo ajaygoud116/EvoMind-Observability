@@ -112,14 +112,14 @@ python demo.py --auto
 
 **What happens:**
 - Both generate safe SQL
-- Confidence: 0.83 → 0.86 → 0.88
+- Confidence: 0.83 — held steady (ambiguous classification produces neutral evidence)
 
 **SigNoz view:**
-- All recent traces show safe SQL
-- Confidence gauge continues upward
+- All recent traces show safe SQL with ? placeholders
+- Confidence gauge reflects evidence type: safe → supporting → +confidence; ambiguous → neutral → no change
 
 **Narration:**
-> "The system converges. Safe requests reinforce the behavior. Confidence continues to grow."
+> "Safe SQL with ? placeholders reinforces the behavior. Confidence grows on each supporting observation."
 
 ---
 
@@ -186,7 +186,7 @@ curl -X POST http://localhost:8000/api/query \
 - [ ] Step 2: 3 unsafe requests → confidence 0.80
 - [ ] Step 3: Promotion visible in `evomind.rule.state_change` span
 - [ ] Step 4: Rule retrieved + guidance injected → safe SQL
-- [ ] Step 5: Confidence 0.86+ after 6 requests
+- [ ] Step 5: Confidence 0.83+ after 6 requests
 - [ ] Step 6: All investigation questions answerable via SigNoz
 - [ ] Traces visible in SigNoz with all attributes
 - [ ] Metrics visible in SigNoz dashboard

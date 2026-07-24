@@ -88,7 +88,7 @@ The behavioral rule progresses through a lifecycle as evidence accumulates and c
 
 ### State Machine Enforcement
 
-The BehavioralRuleRegistry enforces state transitions. No component other than the registry may change `status` directly. The Confidence Engine requests a transition check after each update, but the registry makes the final decision.
+The BehavioralRuleRepository enforces state transitions. No component other than the repository may change `status` directly. The Confidence Engine requests a transition check after each update, but the repository makes the final decision.
 
 ```
 ConfidenceEngine.update(rule_id)
@@ -96,7 +96,7 @@ ConfidenceEngine.update(rule_id)
   → returns: UpdateResult { confidence, should_check_transition: true }
 
 Orchestrator calls:
-  → RuleRegistry.check_transition(rule_id)
+  → rule_repository.check_transition(rule_id)
   → returns: TransitionResult { transitioned: bool, from_status, to_status }
 ```
 

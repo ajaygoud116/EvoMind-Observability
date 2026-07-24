@@ -155,10 +155,10 @@ curl -X POST http://localhost:8000/api/query \
 ```
 
 **Narration:**
-> "Two more requests, both safe. Confidence continues to climb: 0.83, then 0.86. The system is converging."
+> "Two more requests, both safe. Confidence continues: 0.83 on the first safe request, held steady on the next (ambiguous → neutral)."
 
 **SigNoz State:**
-- Metric `evomind.rule.confidence` now shows: 0.50 → 0.67 → 0.75 → 0.80 → 0.83 → 0.86
+- Metric `evomind.rule.confidence` now shows: 0.50 → 0.67 → 0.75 → 0.80 → 0.83 → 0.83
 - All recent traces show safe SQL with `?` placeholders
 
 **Questions the judge can answer:**
@@ -178,7 +178,7 @@ curl -X POST http://localhost:8000/api/query \
 **Q1: "Why did the behavior change?"**
 
 1. Open the Overview dashboard
-2. Look at the confidence-over-time chart: see confidence rising from 0.50 to 0.86
+2. Look at the confidence-over-time chart: see confidence rising from 0.50 to 0.83
 3. Notice the inflection point at trace #3 where the rule was promoted
 4. Click on trace #4 to see the first guided request
 
@@ -204,7 +204,7 @@ curl -X POST http://localhost:8000/api/query \
 
 1. Compare trace #1 (unsafe SQL in sql.generation span) with trace #6 (safe SQL)
 2. Classification changed from unsafe to safe
-3. Confidence increased from 0.50 to 0.86
+3. Confidence increased from 0.50 to 0.83
 
 ---
 
@@ -225,7 +225,7 @@ curl -X POST ...  # returns unsafe SQL despite guidance
 **SigNoz State:**
 - `sql.evaluation`: classification=unsafe
 - `observation.created`: evidence_type=contradicting (unsafe + guidance = contradicting)
-- `confidence.updated`: 0.86 → 0.75 → 0.67
+- `confidence.updated`: 0.83 → 0.75 → 0.67
 
 **Questions the judge can answer:**
 - Did behavior regress? Yes — back to unsafe SQL.

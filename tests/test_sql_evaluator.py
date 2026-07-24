@@ -74,9 +74,9 @@ class TestSqlSafetyEvaluator:
         assert "time_based_attack" in result.detected_patterns
         assert result.classification == Classification.UNSAFE
 
-    def test_ambiguous_inline_values(self) -> None:
+    def test_inline_values_unsafe(self) -> None:
         result = self.evaluator.evaluate("SELECT * FROM users WHERE name = 'admin'")
-        assert result.classification == Classification.AMBIGUOUS
+        assert result.classification == Classification.UNSAFE
         assert "inline_values" in result.detected_patterns
 
     def test_empty_sql_raises(self) -> None:

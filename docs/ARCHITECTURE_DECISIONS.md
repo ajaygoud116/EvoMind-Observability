@@ -198,7 +198,7 @@ Each entry records a significant architectural decision, the alternatives consid
 - Baseline observations are recorded for traceability but do not affect confidence, preserving the integrity of the Beta-Bernoulli model.
 - The derivation remains fully deterministic: 2 tables × 3 classifications = 6 total states, each with a unique mapping.
 
-**Tradeoff:** The factory now needs the rule's current status (not just whether guidance was injected). This adds a dependency on the RuleRegistry. Acceptable because the factory already receives the RequestContext which includes `rule_retrieved_id` for registry lookup.
+**Tradeoff:** The factory now needs the rule's current status (not just whether guidance was injected). This adds a dependency on the rule_repository. Acceptable because the factory already receives the RequestContext which includes `rule_retrieved_id` for repository lookup.
 
 **Rejected — Single table with "contradicting" for safe + no guidance:** Semantically incorrect. A safe result before the rule exists cannot contradict a rule that hasn't been tested.
 

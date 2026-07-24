@@ -220,7 +220,7 @@ def test_demo_sequence():
     1. Seed rule with defaults
     2. Submit 3 unsafe requests → confidence 0.80
     3. Verify rule promoted to active
-    4. Submit 3 guided requests → confidence 0.86
+    4. Submit 3 guided requests → confidence 0.83+ (depends on classification: safe=supporting, ambiguous=neutral)
     5. Verify all SQL is safe after guidance
     6. Verify complete trace structure in mock OTel collector
     """

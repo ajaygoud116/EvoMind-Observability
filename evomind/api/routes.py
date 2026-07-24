@@ -29,6 +29,9 @@ class QueryResponse(BaseModel):
     rule_name: str | None = Field(description="Retrieved rule name")
     guidance_injected: bool = Field(description="Whether guidance was injected")
     confidence: float = Field(description="Current rule confidence")
+    confidence_delta: float = Field(description="Change in rule confidence from this request")
+    status_changed: bool = Field(description="Whether the rule status changed")
+    to_status: str | None = Field(description="New status if changed")
 
 
 @router.get("/api/health", response_model=HealthResponse)

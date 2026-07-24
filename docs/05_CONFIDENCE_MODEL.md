@@ -150,9 +150,10 @@ This allows SigNoz to render a confidence-over-time chart and an engineer to ide
 **After Request 3: confidence=0.80 >= 0.75, evidence=3 >= 3 → Rule promoted to Active**
 
 | Request # | SQL | Evidence Type | α | β | Confidence | Δ |
-|---|---|---|---|---|---|---|
+|---|---|---|---|---|---|---|---|
 | 4 | `SELECT * FROM users WHERE id = ?` | supporting | 5 | 1 | 0.83 | +0.03 |
-| 5 | `INSERT INTO orders VALUES (?, ?)` | supporting | 6 | 1 | 0.86 | +0.03 |
+| 5 | `SELECT * FROM users WHERE id = ?` | supporting | 6 | 1 | 0.86 | +0.03 |
+| (demo) | `SELECT * FROM users WHERE username = ?` | **neutral** | 5 | 1 | 0.83 | 0.00 |
 
 ---
 

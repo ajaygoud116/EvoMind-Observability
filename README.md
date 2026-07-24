@@ -81,7 +81,7 @@ Every arrow emits an OpenTelemetry span. Metrics are emitted at request, evidenc
 | 1–3 | Agent generates unsafe SQL → supporting evidence → confidence rises | Confidence gauge: 0.50 → 0.80 |
 | 3 | Confidence ≥ 0.75 with 3+ evidence → rule promoted to **ACTIVE** | State change span: candidate→active |
 | 4 | Rule retrieved → guidance injected → agent generates **safe SQL** | New spans appear: retrieval + injection |
-| 5–6 | Agent continues generating safe SQL → confidence grows to 0.86+ | Classification flips: unsafe→safe |
+| 4+ | Post-promotion safe requests increase confidence further | Classification flips: unsafe→safe |
 
 ---
 
@@ -132,7 +132,7 @@ Run `python demo.py` for an automated walkthrough:
 1. **3 unsafe requests** → evidence accumulates, confidence reaches 0.80
 2. **Rule promotes** → state change from candidate to active
 3. **Guidance injected** → agent generates safe SQL with `?` placeholders
-4. **Confidence grows** → 0.80 → 0.83 → 0.86 → 0.88
+4. **Confidence grows** → 0.80 → 0.83 → continues on safe post-promotion requests
 
 Each step prints colored output. Use `--auto` to skip pauses.
 
@@ -149,7 +149,7 @@ Open `http://localhost:3301` and navigate to the EvoMind dashboard:
 
 | Panel | What It Shows |
 |-------|--------------|
-| Confidence Over Time | Line chart: 0.50 → 0.80 → 0.86 |
+| Confidence Over Time | Line chart: 0.50 → 0.80 → 0.83+ |
 | SQL Safety Ratio | Pie chart: safe vs unsafe vs ambiguous |
 | Evidence Timeline | Bar chart: supporting vs contradicting |
 | Recent Traces | Table: every request with key attributes |

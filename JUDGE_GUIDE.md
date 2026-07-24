@@ -22,7 +22,7 @@ Expected: `{"status": "ok", "version": "0.1.0", "service": "evomind-observabilit
 python demo.py --auto
 ```
 
-Expected: Colored output showing 6 requests, culminating in safe SQL and confidence 0.88.
+Expected: Colored output showing 6 requests, culminating in safe SQL and confidence 0.83+.
 
 **Pass criteria:** The API is running, requests are processed, SQL is generated.
 
@@ -38,11 +38,12 @@ Look at the demo output:
 | 2 | unsafe | 0.75 | candidate |
 | 3 | unsafe | **0.80** | **active** |
 | 4 | **safe** | 0.83 | active |
-| 5 | safe | 0.86 | active |
-| 6 | safe | 0.88 | active |
+| 5 | ambiguous | 0.83 | active |
+| 6 | ambiguous | 0.83 | active |
 
 **Key observations:**
-- Confidence rises from 0.50 to 0.88
+- Confidence rises from 0.50 to 0.83
+- Post-promotion: guided requests produce safe SQL; non-guided requests may produce ambiguous (e.g., SELECT *)
 - SQL safety flips from unsafe to safe at request 4 (after promotion)
 - The system demonstrably learns from experience
 

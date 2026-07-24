@@ -51,6 +51,9 @@ class TestApiHealth:
         assert "rule_name" in data
         assert "guidance_injected" in data
         assert "confidence" in data
+        assert "confidence_delta" in data
+        assert "status_changed" in data
+        assert "to_status" in data
 
     def test_query_sql_generated(self) -> None:
         response = self.client.post("/api/query", json={"prompt": "show me users"})
