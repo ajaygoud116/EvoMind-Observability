@@ -26,6 +26,9 @@ demo = [
     "colorama>=0.4.6",
 ]
 
+[tool.setuptools.packages.find]
+include = ["evomind", "evomind.*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

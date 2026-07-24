@@ -8,7 +8,7 @@ Demonstrates behavioral learning for AI agents:
 
 Usage:
     python demo.py               # interactive mode (press Enter between steps)
-    python demo.py --auto         # non‑stop mode
+    python demo.py --auto         # non-stop mode
     python demo.py --host 0.0.0.0 --port 9000
 """
 
@@ -22,6 +22,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import requests
+from requests.exceptions import HTTPError
 from colorama import Fore, Style, init as colorama_init
 
 # ---------------------------------------------------------------------------
@@ -131,27 +132,28 @@ class EvoMindClient:
                     f"service={info(data['service'])}"
                 )
                 return data
-            except requests.ConnectionError as exc:
+            except (requests.ConnectionError, HTTPError) as exc:
                 last_err = exc
                 if attempt < MAX_RETRIES:
                     print(
-                        f"  {fail('X')} Connection refused  "
+                        f"  {fail('X')} {type(exc).__name__}  "
                         f"(attempt {attempt}/{MAX_RETRIES})  "
                         f"retrying in {RETRY_DELAY}s..."
                     )
                     time.sleep(RETRY_DELAY)
                 else:
                     print(
-                        f"  {fail('X')} Connection refused  "
+                        f"  {fail('X')} {type(exc).__name__}  "
                         f"(attempt {attempt}/{MAX_RETRIES})"
                     )
+        port_str = self.base.rsplit(":", 1)[-1]
         print(
             f"\n  {fail('FATAL')} Could not reach the API at "
             f"{info(self.base)} after {MAX_RETRIES} attempts."
         )
         print(
             f"  Please ensure the EvoMind server is running on port "
-            f"{info('8000')} and try again."
+            f"{info(port_str)} and try again."
         )
         sys.exit(1)
 
@@ -178,7 +180,7 @@ def print_result(idx: int, r: QueryResult) -> None:
     print(f"        Request ID:    {r.request_id}")
     print(f"        SQL:           {r.sql}")
     if r.status_changed:
-        print(f"        {warn('* STATUS CHANGE')} → {warn(r.to_status or '?')}")
+        print(f"        {warn('* STATUS CHANGE')} -> {warn(r.to_status or '?')}")
     print()
 
 
@@ -233,7 +235,7 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
 
     last = results[-1]
     if last.status_changed and last.to_status == "active":
-        print(f"  {ok('V')} Status changed  →  {warn('active')}\n")
+        print(f"  {ok('V')} Status changed  ->  {warn('active')}\n")
     else:
         status_info = ""
         if not last.status_changed:
@@ -301,7 +303,7 @@ def run_demo(client: EvoMindClient, auto: bool) -> None:
         guidance_mark = ok("V") if r.guidance_injected else "-"
         status = ""
         if r.status_changed:
-            status = warn(f"→{r.to_status or '?'}")
+            status = warn(f"->{r.to_status or '?'}")
         else:
             status = "--"
         sql_short = r.sql if len(r.sql) <= 36 else r.sql[:33] + "..."
