@@ -12,6 +12,12 @@ This project was developed with assistance from AI coding tools (including Claud
 
 ---
 
+## AI Assistant Disclosure
+
+This project was developed with assistance from AI coding tools (including Claude/opencode and GitHub Copilot) for code generation, debugging, documentation, and audit/review. All AI-generated code and documentation were reviewed, tested, and validated by the project author before inclusion.
+
+---
+
 ## The Problem
 
 AI agents generate SQL. Sometimes safely (parameterized queries). Sometimes unsafely (string interpolation — SQL injection risk).
