@@ -7,7 +7,7 @@ from uuid import uuid4
 
 from evomind.agent.deterministic_agent import DeterministicSQLAgent
 from evomind.evaluator.sql_safety_evaluator import SqlSafetyEvaluator
-from evomind.exceptions.errors import OrchestrationError
+from evomind.exceptions.errors import DatabaseError, OrchestrationError
 from evomind.learning.evidence_store import EvidenceStore
 from evomind.learning.confidence_engine import ConfidenceEngine
 from evomind.learning.guidance_injector import GuidanceInjector
@@ -83,6 +83,7 @@ class Orchestrator:
         seeded_rule_id = self._registry.resolve("seeded_rule_id")
 
         metrics_registry = self._registry.resolve("metrics_registry")
+        db = self._registry.resolve("database")
 
         agent = DeterministicSQLAgent()
         evaluator = SqlSafetyEvaluator()
@@ -225,109 +226,125 @@ class Orchestrator:
         metrics_registry.record_request(evaluation.classification.value)
 
         # --- Step 7: Persist request context ---
-        ctx_repo.save(context)
+        try:
+            ctx_repo.save(context)
 
-        # --- Step 6+7: Create and persist observation ---
-        obs_span = SpanHelper.create_span(
-            tracer,
-            SpanHelper.SPAN_NAME_OBSERVATION_CREATED,
-            parent=request_span,
-            attributes={
-                "rule.id": learning_rule_id,
-                "request.id": context.id,
-            },
-        )
-
-        observation = factory.create(evaluation, context, learning_rule_id)
-        obs_repo.save(observation)
-
-        SpanHelper.set_attributes(obs_span, {
-            "observation.id": observation.id,
-            "observation.evidence_type": observation.evidence_type.value,
-            "observation.classification": observation.classification.value,
-        })
-        SpanHelper.end_span(obs_span)
-
-        # --- Steps 8-10: Learning pipeline ---
-        conf_before = rule.confidence if rule else 0.5
-
-        cu_span = SpanHelper.create_span(
-            tracer,
-            SpanHelper.SPAN_NAME_CONFIDENCE_UPDATED,
-            parent=request_span,
-            attributes={
-                "rule.id": learning_rule_id,
-                "confidence.before": conf_before,
-            },
-        )
-
-        result = confidence_engine.update(
-            learning_rule_id, observation.evidence_type
-        )
-        SpanHelper.set_attributes(cu_span, {
-            "confidence.after": result["confidence_after"],
-            "confidence.delta": result["delta"],
-            "alpha": result["alpha"],
-            "beta": result["beta"],
-        })
-        SpanHelper.end_span(cu_span)
-
-        metrics_registry.record_confidence(
-            learning_rule_id, result["confidence_after"]
-        )
-
-        ev_span = SpanHelper.create_span(
-            tracer,
-            SpanHelper.SPAN_NAME_EVIDENCE_APPENDED,
-            parent=request_span,
-            attributes={
-                "rule.id": learning_rule_id,
-                "observation.id": observation.id,
-                "evidence_type": observation.evidence_type.value,
-            },
-        )
-
-        evidence = evidence_store.append(
-            observation, conf_before, result["confidence_after"]
-        )
-        SpanHelper.set_attributes(ev_span, {
-            "evidence.id": evidence.id,
-            "evidence.delta": evidence.delta,
-        })
-        SpanHelper.end_span(ev_span)
-
-        metrics_registry.record_evidence_count(
-            learning_rule_id, rule.total_evidence if rule else 0
-        )
-
-        if result["status_changed"]:
-            sc_span = SpanHelper.create_span(
+            # --- Step 6+7: Create and persist observation ---
+            obs_span = SpanHelper.create_span(
                 tracer,
-                SpanHelper.SPAN_NAME_RULE_STATE_CHANGE,
+                SpanHelper.SPAN_NAME_OBSERVATION_CREATED,
                 parent=request_span,
                 attributes={
                     "rule.id": learning_rule_id,
-                    "from_status": result["from_status"],
-                    "to_status": result["to_status"],
-                    "reason": result["reason"],
-                    "confidence": result["confidence_after"],
+                    "request.id": context.id,
                 },
             )
-            SpanHelper.end_span(sc_span)
 
-        # Persist LearningState snapshot
-        learning_state = LearningState(
-            id=str(uuid4()),
-            request_id=context.id,
-            rule_id=learning_rule_id,
-            confidence=result["confidence_after"],
-            status=result["to_status"] or (rule.status.value if rule else "candidate"),
-            supporting_count=rule.supporting_count if rule else 0,
-            contradicting_count=rule.contradicting_count if rule else 0,
-            total_evidence=rule.total_evidence if rule else 0,
-            snapshot_at=datetime.now(timezone.utc).isoformat(),
-        )
-        learning_state_repo.save(learning_state)
+            observation = factory.create(evaluation, context, learning_rule_id)
+            obs_repo.save(observation)
+
+            SpanHelper.set_attributes(obs_span, {
+                "observation.id": observation.id,
+                "observation.evidence_type": observation.evidence_type.value,
+                "observation.classification": observation.classification.value,
+            })
+            SpanHelper.end_span(obs_span)
+
+            # --- Steps 8-10: Learning pipeline ---
+            conf_before = rule.confidence if rule else 0.5
+
+            cu_span = SpanHelper.create_span(
+                tracer,
+                SpanHelper.SPAN_NAME_CONFIDENCE_UPDATED,
+                parent=request_span,
+                attributes={
+                    "rule.id": learning_rule_id,
+                    "confidence.before": conf_before,
+                },
+            )
+
+            result = confidence_engine.update(
+                learning_rule_id, observation.evidence_type
+            )
+            SpanHelper.set_attributes(cu_span, {
+                "confidence.after": result["confidence_after"],
+                "confidence.delta": result["delta"],
+                "alpha": result["alpha"],
+                "beta": result["beta"],
+            })
+            SpanHelper.end_span(cu_span)
+
+            metrics_registry.record_confidence(
+                learning_rule_id, result["confidence_after"]
+            )
+
+            ev_span = SpanHelper.create_span(
+                tracer,
+                SpanHelper.SPAN_NAME_EVIDENCE_APPENDED,
+                parent=request_span,
+                attributes={
+                    "rule.id": learning_rule_id,
+                    "observation.id": observation.id,
+                    "evidence_type": observation.evidence_type.value,
+                },
+            )
+
+            evidence = evidence_store.append(
+                observation, conf_before, result["confidence_after"]
+            )
+            SpanHelper.set_attributes(ev_span, {
+                "evidence.id": evidence.id,
+                "evidence.delta": evidence.delta,
+            })
+            SpanHelper.end_span(ev_span)
+
+            metrics_registry.record_evidence_count(
+                learning_rule_id, rule.total_evidence if rule else 0
+            )
+
+            if result["status_changed"]:
+                sc_span = SpanHelper.create_span(
+                    tracer,
+                    SpanHelper.SPAN_NAME_RULE_STATE_CHANGE,
+                    parent=request_span,
+                    attributes={
+                        "rule.id": learning_rule_id,
+                        "from_status": result["from_status"],
+                        "to_status": result["to_status"],
+                        "reason": result["reason"],
+                        "confidence": result["confidence_after"],
+                    },
+                )
+                SpanHelper.end_span(sc_span)
+
+            # Persist LearningState snapshot
+            learning_state = LearningState(
+                id=str(uuid4()),
+                request_id=context.id,
+                rule_id=learning_rule_id,
+                confidence=result["confidence_after"],
+                status=result["to_status"] or (rule.status.value if rule else "candidate"),
+                supporting_count=rule.supporting_count if rule else 0,
+                contradicting_count=rule.contradicting_count if rule else 0,
+                total_evidence=rule.total_evidence if rule else 0,
+                snapshot_at=datetime.now(timezone.utc).isoformat(),
+            )
+            learning_state_repo.save(learning_state)
+
+            db.commit()
+        except Exception as exc:
+            try:
+                db.rollback()
+            except Exception as rollback_exc:
+                try:
+                    db.close()
+                except Exception:
+                    pass
+                raise DatabaseError(
+                    f"Pipeline write failed and rollback also failed. "
+                    f"Original: {exc}. Rollback: {rollback_exc}"
+                ) from exc
+            raise
 
         # Lifecycle complete span
         complete_span = SpanHelper.create_span(

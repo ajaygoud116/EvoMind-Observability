@@ -63,6 +63,18 @@ class Database:
             self.connection.rollback()
             raise DatabaseError(f"Database reset failed: {exc}") from exc
 
+    def commit(self) -> None:
+        try:
+            self.connection.commit()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Commit failed: {exc}") from exc
+
+    def rollback(self) -> None:
+        try:
+            self.connection.rollback()
+        except sqlite3.Error as exc:
+            raise DatabaseError(f"Rollback failed: {exc}") from exc
+
     def close(self) -> None:
         conn = getattr(self._local, "connection", None)
         if conn is not None:

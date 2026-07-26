@@ -1,9 +1,61 @@
 from __future__ import annotations
 
+import os as _os
+import sqlite3
+import tempfile as _tempfile
+import uuid as _uuid
+
+import pytest
+
+from evomind.config.settings import Settings
+from evomind.exceptions.errors import DatabaseError
+from evomind.persistence.database import Database
 from evomind.persistence.schema import Schema
 
 
 class TestDatabase:
+    def test_commit_persists_data(self) -> None:
+        db_path = _os.path.join(_tempfile.gettempdir(), f"evomind_{_uuid.uuid4().hex}.db")
+        try:
+            settings = Settings(database_path=db_path, otel_enabled=False)
+            db = Database(settings)
+            db.initialize()
+            db.execute(
+                "INSERT INTO behavioral_rules (id, name, guidance_text, created_at, updated_at) "
+                "VALUES (?, ?, ?, datetime('now'), datetime('now'))",
+                ("commit-test", "commit_rule", "test"),
+            )
+            db.commit()
+            db.close()
+            db2 = Database(settings)
+            db2.initialize()
+            row = db2.fetch_one("SELECT * FROM behavioral_rules WHERE id = ?", ("commit-test",))
+            assert row is not None
+            assert row["name"] == "commit_rule"
+            db2.close()
+        finally:
+            if _os.path.exists(db_path):
+                _os.remove(db_path)
+
+    def test_rollback_undoes_data(self) -> None:
+        db_path = _os.path.join(_tempfile.gettempdir(), f"evomind_{_uuid.uuid4().hex}.db")
+        try:
+            settings = Settings(database_path=db_path, otel_enabled=False)
+            db = Database(settings)
+            db.initialize()
+            db.execute(
+                "INSERT INTO behavioral_rules (id, name, guidance_text, created_at, updated_at) "
+                "VALUES (?, ?, ?, datetime('now'), datetime('now'))",
+                ("rb-test", "rb_rule", "test"),
+            )
+            db.rollback()
+            row = db.fetch_one("SELECT * FROM behavioral_rules WHERE id = ?", ("rb-test",))
+            assert row is None
+            db.close()
+        finally:
+            if _os.path.exists(db_path):
+                _os.remove(db_path)
+
     def test_initialize_and_query(self, database) -> None:
         """Database initializes without error and can run queries."""
         result = database.fetch_one("SELECT COUNT(*) as cnt FROM behavioral_rules")

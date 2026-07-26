@@ -210,7 +210,7 @@ evomind-observability/
 │   ├── persistence/            # SQLite repositories + schema
 │   └── telemetry/              # OpenTelemetry tracer, meter,
 │                               # MetricsRegistry, exporters
-├── tests/                      # 214 tests, 92.73% coverage
+├── tests/                      # 241 tests, 92% coverage
 ├── ops/                        # OTel collector config, dashboard JSON
 ├── casting.yaml                # Foundry deployment config
 ├── demo.py                     # Automated demo script

@@ -200,7 +200,7 @@ UNSAFE_PROMPTS = [
 
 SAFE_PROMPTS = [
     "Show me all users",
-    "List all orders",
+    "Find user by name",
 ]
 
 
